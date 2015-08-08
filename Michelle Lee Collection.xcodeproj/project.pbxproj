@@ -1,0 +1,506 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		4F3DDEFC1B759196006F9245 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F3DDEFB1B759196006F9245 /* AppDelegate.swift */; };
+		4F3DDEFE1B759196006F9245 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F3DDEFD1B759196006F9245 /* ViewController.swift */; };
+		4F3DDF011B759196006F9245 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 4F3DDEFF1B759196006F9245 /* Main.storyboard */; };
+		4F3DDF031B759196006F9245 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 4F3DDF021B759196006F9245 /* Assets.xcassets */; };
+		4F3DDF061B759196006F9245 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 4F3DDF041B759196006F9245 /* LaunchScreen.storyboard */; };
+		4F3DDF111B759196006F9245 /* Michelle_Lee_CollectionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F3DDF101B759196006F9245 /* Michelle_Lee_CollectionTests.swift */; };
+		4F3DDF1C1B759196006F9245 /* Michelle_Lee_CollectionUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F3DDF1B1B759196006F9245 /* Michelle_Lee_CollectionUITests.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		4F3DDF0D1B759196006F9245 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 4F3DDEF01B759196006F9245 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 4F3DDEF71B759196006F9245;
+			remoteInfo = "Michelle Lee Collection";
+		};
+		4F3DDF181B759196006F9245 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 4F3DDEF01B759196006F9245 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 4F3DDEF71B759196006F9245;
+			remoteInfo = "Michelle Lee Collection";
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		4F3DDEF81B759196006F9245 /* Michelle Lee Collection.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Michelle Lee Collection.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		4F3DDEFB1B759196006F9245 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		4F3DDEFD1B759196006F9245 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
+		4F3DDF001B759196006F9245 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
+		4F3DDF021B759196006F9245 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		4F3DDF051B759196006F9245 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
+		4F3DDF071B759196006F9245 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		4F3DDF0C1B759196006F9245 /* Michelle Lee CollectionTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Michelle Lee CollectionTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
+		4F3DDF101B759196006F9245 /* Michelle_Lee_CollectionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Michelle_Lee_CollectionTests.swift; sourceTree = "<group>"; };
+		4F3DDF121B759196006F9245 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		4F3DDF171B759196006F9245 /* Michelle Lee CollectionUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Michelle Lee CollectionUITests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
+		4F3DDF1B1B759196006F9245 /* Michelle_Lee_CollectionUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Michelle_Lee_CollectionUITests.swift; sourceTree = "<group>"; };
+		4F3DDF1D1B759196006F9245 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		4F3DDEF51B759196006F9245 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		4F3DDF091B759196006F9245 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		4F3DDF141B759196006F9245 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		4F3DDEEF1B759196006F9245 = {
+			isa = PBXGroup;
+			children = (
+				4F3DDEFA1B759196006F9245 /* Michelle Lee Collection */,
+				4F3DDF0F1B759196006F9245 /* Michelle Lee CollectionTests */,
+				4F3DDF1A1B759196006F9245 /* Michelle Lee CollectionUITests */,
+				4F3DDEF91B759196006F9245 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		4F3DDEF91B759196006F9245 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				4F3DDEF81B759196006F9245 /* Michelle Lee Collection.app */,
+				4F3DDF0C1B759196006F9245 /* Michelle Lee CollectionTests.xctest */,
+				4F3DDF171B759196006F9245 /* Michelle Lee CollectionUITests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		4F3DDEFA1B759196006F9245 /* Michelle Lee Collection */ = {
+			isa = PBXGroup;
+			children = (
+				4F3DDEFB1B759196006F9245 /* AppDelegate.swift */,
+				4F3DDEFD1B759196006F9245 /* ViewController.swift */,
+				4F3DDEFF1B759196006F9245 /* Main.storyboard */,
+				4F3DDF021B759196006F9245 /* Assets.xcassets */,
+				4F3DDF041B759196006F9245 /* LaunchScreen.storyboard */,
+				4F3DDF071B759196006F9245 /* Info.plist */,
+			);
+			path = "Michelle Lee Collection";
+			sourceTree = "<group>";
+		};
+		4F3DDF0F1B759196006F9245 /* Michelle Lee CollectionTests */ = {
+			isa = PBXGroup;
+			children = (
+				4F3DDF101B759196006F9245 /* Michelle_Lee_CollectionTests.swift */,
+				4F3DDF121B759196006F9245 /* Info.plist */,
+			);
+			path = "Michelle Lee CollectionTests";
+			sourceTree = "<group>";
+		};
+		4F3DDF1A1B759196006F9245 /* Michelle Lee CollectionUITests */ = {
+			isa = PBXGroup;
+			children = (
+				4F3DDF1B1B759196006F9245 /* Michelle_Lee_CollectionUITests.swift */,
+				4F3DDF1D1B759196006F9245 /* Info.plist */,
+			);
+			path = "Michelle Lee CollectionUITests";
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		4F3DDEF71B759196006F9245 /* Michelle Lee Collection */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 4F3DDF201B759196006F9245 /* Build configuration list for PBXNativeTarget "Michelle Lee Collection" */;
+			buildPhases = (
+				4F3DDEF41B759196006F9245 /* Sources */,
+				4F3DDEF51B759196006F9245 /* Frameworks */,
+				4F3DDEF61B759196006F9245 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "Michelle Lee Collection";
+			productName = "Michelle Lee Collection";
+			productReference = 4F3DDEF81B759196006F9245 /* Michelle Lee Collection.app */;
+			productType = "com.apple.product-type.application";
+		};
+		4F3DDF0B1B759196006F9245 /* Michelle Lee CollectionTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 4F3DDF231B759196006F9245 /* Build configuration list for PBXNativeTarget "Michelle Lee CollectionTests" */;
+			buildPhases = (
+				4F3DDF081B759196006F9245 /* Sources */,
+				4F3DDF091B759196006F9245 /* Frameworks */,
+				4F3DDF0A1B759196006F9245 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				4F3DDF0E1B759196006F9245 /* PBXTargetDependency */,
+			);
+			name = "Michelle Lee CollectionTests";
+			productName = "Michelle Lee CollectionTests";
+			productReference = 4F3DDF0C1B759196006F9245 /* Michelle Lee CollectionTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		4F3DDF161B759196006F9245 /* Michelle Lee CollectionUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 4F3DDF261B759196006F9245 /* Build configuration list for PBXNativeTarget "Michelle Lee CollectionUITests" */;
+			buildPhases = (
+				4F3DDF131B759196006F9245 /* Sources */,
+				4F3DDF141B759196006F9245 /* Frameworks */,
+				4F3DDF151B759196006F9245 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				4F3DDF191B759196006F9245 /* PBXTargetDependency */,
+			);
+			name = "Michelle Lee CollectionUITests";
+			productName = "Michelle Lee CollectionUITests";
+			productReference = 4F3DDF171B759196006F9245 /* Michelle Lee CollectionUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		4F3DDEF01B759196006F9245 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0700;
+				ORGANIZATIONNAME = Catherine;
+				TargetAttributes = {
+					4F3DDEF71B759196006F9245 = {
+						CreatedOnToolsVersion = 7.0;
+					};
+					4F3DDF0B1B759196006F9245 = {
+						CreatedOnToolsVersion = 7.0;
+						TestTargetID = 4F3DDEF71B759196006F9245;
+					};
+					4F3DDF161B759196006F9245 = {
+						CreatedOnToolsVersion = 7.0;
+						TestTargetID = 4F3DDEF71B759196006F9245;
+					};
+				};
+			};
+			buildConfigurationList = 4F3DDEF31B759196006F9245 /* Build configuration list for PBXProject "Michelle Lee Collection" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = 4F3DDEEF1B759196006F9245;
+			productRefGroup = 4F3DDEF91B759196006F9245 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				4F3DDEF71B759196006F9245 /* Michelle Lee Collection */,
+				4F3DDF0B1B759196006F9245 /* Michelle Lee CollectionTests */,
+				4F3DDF161B759196006F9245 /* Michelle Lee CollectionUITests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		4F3DDEF61B759196006F9245 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				4F3DDF061B759196006F9245 /* LaunchScreen.storyboard in Resources */,
+				4F3DDF031B759196006F9245 /* Assets.xcassets in Resources */,
+				4F3DDF011B759196006F9245 /* Main.storyboard in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		4F3DDF0A1B759196006F9245 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		4F3DDF151B759196006F9245 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		4F3DDEF41B759196006F9245 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				4F3DDEFE1B759196006F9245 /* ViewController.swift in Sources */,
+				4F3DDEFC1B759196006F9245 /* AppDelegate.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		4F3DDF081B759196006F9245 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				4F3DDF111B759196006F9245 /* Michelle_Lee_CollectionTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		4F3DDF131B759196006F9245 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				4F3DDF1C1B759196006F9245 /* Michelle_Lee_CollectionUITests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		4F3DDF0E1B759196006F9245 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 4F3DDEF71B759196006F9245 /* Michelle Lee Collection */;
+			targetProxy = 4F3DDF0D1B759196006F9245 /* PBXContainerItemProxy */;
+		};
+		4F3DDF191B759196006F9245 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 4F3DDEF71B759196006F9245 /* Michelle Lee Collection */;
+			targetProxy = 4F3DDF181B759196006F9245 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin PBXVariantGroup section */
+		4F3DDEFF1B759196006F9245 /* Main.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				4F3DDF001B759196006F9245 /* Base */,
+			);
+			name = Main.storyboard;
+			sourceTree = "<group>";
+		};
+		4F3DDF041B759196006F9245 /* LaunchScreen.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				4F3DDF051B759196006F9245 /* Base */,
+			);
+			name = LaunchScreen.storyboard;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		4F3DDF1E1B759196006F9245 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				MTL_ENABLE_DEBUG_INFO = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		4F3DDF1F1B759196006F9245 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		4F3DDF211B759196006F9245 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				INFOPLIST_FILE = "Michelle Lee Collection/Info.plist";
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = "Catherine.Michelle-Lee-Collection";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		4F3DDF221B759196006F9245 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				INFOPLIST_FILE = "Michelle Lee Collection/Info.plist";
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = "Catherine.Michelle-Lee-Collection";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
+		4F3DDF241B759196006F9245 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				INFOPLIST_FILE = "Michelle Lee CollectionTests/Info.plist";
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = "Catherine.Michelle-Lee-CollectionTests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Michelle Lee Collection.app/Michelle Lee Collection";
+			};
+			name = Debug;
+		};
+		4F3DDF251B759196006F9245 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				INFOPLIST_FILE = "Michelle Lee CollectionTests/Info.plist";
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = "Catherine.Michelle-Lee-CollectionTests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Michelle Lee Collection.app/Michelle Lee Collection";
+			};
+			name = Release;
+		};
+		4F3DDF271B759196006F9245 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				INFOPLIST_FILE = "Michelle Lee CollectionUITests/Info.plist";
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = "Catherine.Michelle-Lee-CollectionUITests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TEST_TARGET_NAME = "Michelle Lee Collection";
+				USES_XCTRUNNER = YES;
+			};
+			name = Debug;
+		};
+		4F3DDF281B759196006F9245 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				INFOPLIST_FILE = "Michelle Lee CollectionUITests/Info.plist";
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = "Catherine.Michelle-Lee-CollectionUITests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TEST_TARGET_NAME = "Michelle Lee Collection";
+				USES_XCTRUNNER = YES;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		4F3DDEF31B759196006F9245 /* Build configuration list for PBXProject "Michelle Lee Collection" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				4F3DDF1E1B759196006F9245 /* Debug */,
+				4F3DDF1F1B759196006F9245 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		4F3DDF201B759196006F9245 /* Build configuration list for PBXNativeTarget "Michelle Lee Collection" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				4F3DDF211B759196006F9245 /* Debug */,
+				4F3DDF221B759196006F9245 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+		};
+		4F3DDF231B759196006F9245 /* Build configuration list for PBXNativeTarget "Michelle Lee CollectionTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				4F3DDF241B759196006F9245 /* Debug */,
+				4F3DDF251B759196006F9245 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+		};
+		4F3DDF261B759196006F9245 /* Build configuration list for PBXNativeTarget "Michelle Lee CollectionUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				4F3DDF271B759196006F9245 /* Debug */,
+				4F3DDF281B759196006F9245 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 4F3DDEF01B759196006F9245 /* Project object */;
+}
