@@ -12,12 +12,41 @@ import UIKit
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
     var window: UIWindow?
+    var internetReach:Reachability?
 
 
     func application(application: UIApplication, didFinishLaunchingWithOptions launchOptions: [NSObject: AnyObject]?) -> Bool {
         // Override point for customization after application launch.
+        Variables.sharedInstance.populatePlayListFromPlist("ModifiedPlayist.plist")
+        
+        self.internetReach = Reachability.reachabilityForInternetConnection()
+        self.internetReach?.startNotifier()
+        self.checkStatus((self.internetReach?.currentReachabilityStatus())!)
+        
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: "checkForReachability:", name: kReachabilityChangedNotification, object: nil)
+        
         return true
     }
+    
+    func checkForReachability(notification:NSNotification){
+        self.internetReach = notification.object as? Reachability
+        let myNetWorkStatus:NetworkStatus = (self.internetReach?.currentReachabilityStatus()
+        )!
+        self.checkStatus(myNetWorkStatus)
+    }
+    
+    func checkStatus(currentNetWork:NetworkStatus){
+        if(currentNetWork.rawValue == NotReachable.rawValue){
+            sourceMethods.sharedInstance.currentConnectionState = ConnectionState.NONE
+        }else if(currentNetWork.rawValue == ReachableViaWiFi.rawValue){
+            sourceMethods.sharedInstance.currentConnectionState = ConnectionState.WIFI;
+            
+        }else if(currentNetWork.rawValue == ReachableViaWWAN.rawValue){
+            sourceMethods.sharedInstance.currentConnectionState = ConnectionState.WWAN
+        }
+        AppearanceControl.grayOutTableCell()
+    }
+
 
     func applicationWillResignActive(application: UIApplication) {
         // Sent when the application is about to move from active to inactive state. This can occur for certain types of temporary interruptions (such as an incoming phone call or SMS message) or when the user quits the application and it begins the transition to the background state.
@@ -39,6 +68,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func applicationWillTerminate(application: UIApplication) {
         // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
+        NSNotificationCenter.defaultCenter().removeObserver(self, name: kReachabilityChangedNotification, object: nil)
     }
 
 
