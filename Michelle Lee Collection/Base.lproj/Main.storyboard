@@ -413,7 +413,7 @@
                                 <rect key="frame" x="20" y="244" width="247" height="336"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 <prototypes>
-                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="audioTableViewCell" id="kdI-OC-OFd" customClass="AudioCell" customModule="Michelle_Lee_Collection" customModuleProvider="target">
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="CustomAudioCell" id="kdI-OC-OFd" customClass="CustomAudioCell" customModule="Michelle_Lee_Collection" customModuleProvider="target">
                                         <rect key="frame" x="0.0" y="22" width="247" height="44"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="kdI-OC-OFd" id="cxk-vM-jER">

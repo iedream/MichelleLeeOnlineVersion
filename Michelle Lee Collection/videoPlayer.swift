@@ -56,13 +56,13 @@ class videoPlayer: AVPlayerViewController {
             player = AVPlayer(URL: finalpath)
             player?.play()
         }else{
-            if( sourceMethods.sharedInstance.currentConnectionState == ConnectionState.WWAN && sourceMethods.sharedInstance.allowWWAN == false){
+            if(sourceMethods.sharedInstance.CellularNotAllow()){
                 let alert:UIAlertView = UIAlertView(title: "3G not allowed", message: "Not allowed to play with 3G connection, please turn on allow 3G", delegate: self, cancelButtonTitle: "OK")
                 alert.show()
-            }else if(sourceMethods.sharedInstance.currentConnectionState == ConnectionState.NONE){
+            }else if(!sourceMethods.sharedInstance.ConnectionAvailable()){
                 let alert:UIAlertView = UIAlertView(title: "No Internet Connect", message: "Cannot detect WiFi or 3G, Please check your connection", delegate: self, cancelButtonTitle: "OK")
                 alert.show()
-            }else if((sourceMethods.sharedInstance.currentConnectionState == ConnectionState.WWAN && sourceMethods.sharedInstance.allowWWAN == true) || (sourceMethods.sharedInstance.currentConnectionState == ConnectionState.WIFI)){
+            }else if(sourceMethods.sharedInstance.ConnectionAvailable()){
                 currentPathName = videoArr
                 let myURL:NSURL = NSURL(string: videoArr[1] as! String)!
                 player = AVPlayer(URL: myURL)
@@ -85,7 +85,7 @@ class videoPlayer: AVPlayerViewController {
                 newRow = 0
             }
             
-            if((sourceMethods.sharedInstance.allowWWAN == true && sourceMethods.sharedInstance.currentConnectionState == ConnectionState.WWAN) || sourceMethods.sharedInstance.currentConnectionState == ConnectionState.WIFI){
+            if(sourceMethods.sharedInstance.ConnectionAvailable()){
                 if( self.currentState == self.Multiple_Rotate){
                     self.playVideo(self.videoData[newRow] as! NSArray)
                     self.player!.play()

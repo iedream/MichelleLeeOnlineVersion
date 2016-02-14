@@ -22,41 +22,77 @@ class sourceMethods:UIViewController,AVAudioPlayerDelegate {
     // Singleton
     static let sharedInstance = sourceMethods()
     
-    let mainQuery:MPMediaQuery = MPMediaQuery.init()
+    // Ipod Library Files
+    private let mainQuery:MPMediaQuery = MPMediaQuery.init()
     
-    var currentConnectionState:ConnectionState = ConnectionState.NONE
-    var allowWWAN:Bool = false
+    // Connection Related Properties
+    private var currentConnectionState:ConnectionState = ConnectionState.NONE
+    private var allowWWAN:Bool = false
 
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        self.populateLocalMusic()
-        Variables.sharedInstance.writeToModifyPlist()
     }
     
-    func runSearch(dic:NSMutableDictionary,title:String,type:MPMediaType,query:MPMediaQuery){
+    // Setters For Current State
+    func setCurrentConnectState(state:ConnectionState){
+        currentConnectionState = state
+    }
+    
+    func SetCelluar(turnOn:Bool){
+        allowWWAN = turnOn
+    }
+    
+    // Getters For Current State
+    func ConnectionAvailable() -> Bool{
+        if((currentConnectionState == ConnectionState.WWAN && allowWWAN == true) || currentConnectionState == ConnectionState.WIFI){
+            return true
+        }
+        return false
+    }
+    
+    func CellularNotAllow() -> Bool{
+        if(currentConnectionState == ConnectionState.WWAN && !allowWWAN){
+            return true
+        }
+        return false
+    }
+    
+    // Goes through all Ipod Library Files and grab what we need to put be dictionary
+    private func runSearch(dic:NSMutableDictionary,title:String,type:MPMediaType,query:MPMediaQuery){
         
         for name in dic.allKeys{
+            
+            // Declare different type of predicate
             let namePredicate = MPMediaPropertyPredicate(value: name, forProperty: MPMediaItemPropertyTitle)
             let typePredicate = MPMediaPropertyPredicate(value: type.rawValue as NSNumber, forProperty: MPMediaItemPropertyMediaType)
             let playlistPredicate = MPMediaPropertyPredicate(value:title , forProperty: MPMediaItemPropertyAlbumTitle)
+            
+            // Add different predicate to filter
             query.addFilterPredicate(typePredicate)
             query.addFilterPredicate(namePredicate)
-            var result:MPMediaItem = MPMediaItem()
+            
+            // Variable declaration
+            var result:MPMediaItem!
             var resultURL:NSURL = NSURL()
+            
+            // If there is more than one result, check for albulm title, if find, populate Result
             if(query.items?.count > 1){
                 query.addFilterPredicate(playlistPredicate)
                 if(query.items?.count == 1){
                     result = query.items![0]
                 }
-                resultURL = result.valueForProperty(MPMediaItemPropertyAssetURL) as! NSURL
-                dic.setValue(["local",resultURL.absoluteString], forKey: name as! String)
+            // If there is one result, populate Result
             }else if( query.items?.count == 1){
                 result = query.items![0]
+            }
+            // Add result to dic
+            if(result != nil){
                 resultURL = result.valueForProperty(MPMediaItemPropertyAssetURL) as! NSURL
                 dic.setValue(["local",resultURL.absoluteString], forKey: name as! String)
             }
             
+            // Remove all filter so query is back to original
             query.removeFilterPredicate(playlistPredicate)
             query.removeFilterPredicate(typePredicate)
             query.removeFilterPredicate(namePredicate)
@@ -64,42 +100,24 @@ class sourceMethods:UIViewController,AVAudioPlayerDelegate {
         
     }
 
-    
+    // Check for Local Audio Source
     func populateLocalMusic(){
-       
-        
         for (title,subdic) in Variables.sharedInstance.allAmblum{
             runSearch(subdic as! NSMutableDictionary, title: title as! String, type: MPMediaType.Music, query: mainQuery)
         }
-        
     }
     
+    // Check for Local Video Source
     func populateLocalVideo(){
-        
         for (name,subdic) in Variables.sharedInstance.allVideoPlayist{
             if(subdic.allValues[0] is NSArray){
                 runSearch(subdic as! NSMutableDictionary, title: name as! String, type:MPMediaType.AnyVideo, query: mainQuery)
-                
             }else if(subdic.allValues[0] is NSMutableDictionary){
                 for (key,bottomDic) in subdic as! NSMutableDictionary{
                     runSearch(bottomDic as! NSMutableDictionary, title: key as! String, type: MPMediaType.AnyVideo, query: mainQuery)
                 }
-               
             }
-        
-            
         }
-        
     }
-        
-    func populateOnlineMusic(){
-        
-    }
-    
-    func populateOnLineVideo(){
-        
-    }
-    
-    
 }
 

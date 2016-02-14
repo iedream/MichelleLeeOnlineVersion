@@ -10,32 +10,6 @@ import Foundation
 import UIKit
 import AVFoundation
 
-public class AudioCell: UITableViewCell{
-    var textView:UILabel = UILabel.init()
-    var type:FileType = FileType.LOCAL
-    
-    dynamic var imageViewAlpha: NSNumber? {
-        get { return self.textView.alpha}
-        set {
-            if(self.type == FileType.URL){
-                self.textView.alpha =  CGFloat.init(newValue!)
-            }else{
-                self.textView.alpha = 1.0
-            }
-        }
-    }
-    
-    public override func layoutSubviews() {
-        super.layoutSubviews()
-        textView.frame = CGRectMake(0, 0, self.frame.width, self.frame.height)
-        self.textView.adjustsFontSizeToFitWidth = true
-        self.textView.backgroundColor = UIColor.clearColor()
-        self.backgroundColor = UIColor.clearColor()
-        self.textView.textColor = UIColor.whiteColor()
-        self.contentView.addSubview(textView)
-    }
-}
-
 class AbulmViewController: UIViewController,UITableViewDelegate,UITableViewDataSource,UIPickerViewDataSource,UIPickerViewDelegate {
     
     // AudioPlayerProperty
@@ -56,7 +30,7 @@ class AbulmViewController: UIViewController,UITableViewDelegate,UITableViewDataS
     var currentMode:AudioPlayerState = AudioPlayerState.Not_Init
     
     // Table View Property
-    let tableViewCellIdentifier = "audioTableViewCell"
+    //let tableViewCellIdentifier = "audioTableViewCell"
     @IBOutlet var audioTableView: UITableView!
     
     // Picker View Property
@@ -109,6 +83,8 @@ class AbulmViewController: UIViewController,UITableViewDelegate,UITableViewDataS
         audioTableView.backgroundColor = UIColor.clearColor()
         audioTableView.delegate = self
         audioTableView.dataSource = self
+        //audioTableView.registerClass(CustomAudioLocalCell.classForCoder(), forCellReuseIdentifier: "AudioLocal")
+        //audioTableView.registerClass(CustomAudioURLCell.classForCoder(), forCellReuseIdentifier: "AudioURL")
         
         pickerView.delegate = self
         pickerView.dataSource = self
@@ -148,26 +124,15 @@ class AbulmViewController: UIViewController,UITableViewDelegate,UITableViewDataS
     }
     
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-        let cell = audioTableView.dequeueReusableCellWithIdentifier(tableViewCellIdentifier, forIndexPath: indexPath) as! AudioCell
-        
+        let cell = audioTableView.dequeueReusableCellWithIdentifier("CustomAudioCell", forIndexPath: indexPath) as! CustomAudioCell
         let row = indexPath.row
-        
-        if(currentDic.count != 0){
-            if((currentDic[tableTitleArray[row] as! String] as! NSArray)[0] as! String == "url"){
-                cell.type = FileType.URL
-                cell.imageViewAlpha = 0.3
-            }else{
-                cell.type = FileType.LOCAL
-                cell.imageViewAlpha = 1.0
-            }
+        if(currentDic.count != 0 && (currentDic[tableTitleArray[row] as! String] as! NSArray)[0] as! String == "url"){
+            cell.setCellAlpha(true)
         }else{
-            cell.type = FileType.LOCAL
-            cell.imageViewAlpha = 1.0
+            cell.setCellAlpha(false)
         }
-        
         if(tableTitleArray.count != 0){
-            cell.textView.text = tableTitleArray.objectAtIndex(row) as? String
-            //cell.textLabel?.text = tableTitleArray.objectAtIndex(row) as? String
+            cell.textLabel?.text = tableTitleArray.objectAtIndex(row) as? String
         }
         
         return cell

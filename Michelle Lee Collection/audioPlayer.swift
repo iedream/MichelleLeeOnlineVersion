@@ -45,7 +45,7 @@ class audioPlayer:UIViewController,AVAudioPlayerDelegate {
     
     // Video MV Button
     var mvButton:UIButton = UIButton()
-    var videoDic:[String:String] = [String:String]()
+    var videoDic:NSDictionary = Variables.sharedInstance.allAmblumVideos.copy() as! NSDictionary
 
     // Timer
     var timer = NSTimer()
@@ -58,7 +58,6 @@ class audioPlayer:UIViewController,AVAudioPlayerDelegate {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
     }
     
     func setUpUIForPlayer(name:String){
@@ -112,16 +111,16 @@ class audioPlayer:UIViewController,AVAudioPlayerDelegate {
     
     func initializePlayerWithFile(name:String){
         if(currentPath[0].isEqualToString("url")){
-            if(sourceMethods.sharedInstance.currentConnectionState == ConnectionState.WWAN && sourceMethods.sharedInstance.allowWWAN == false){
+            if(sourceMethods.sharedInstance.CellularNotAllow()){
                 //pop up message telling user 3g is not allowed
                 let alert:UIAlertView = UIAlertView(title: "3G not allowed", message: "Not allowed to play with 3G connection, please turn on allow 3G", delegate: self, cancelButtonTitle: "OK")
                 alert.show()
-            }else if(sourceMethods.sharedInstance.currentConnectionState == ConnectionState.NONE){
+            }else if(!sourceMethods.sharedInstance.ConnectionAvailable()){
                 //pop up message saying no internet connection is detected
                 let alert:UIAlertView = UIAlertView(title: "No Internet Connect", message: "Cannot detect WiFi or 3G, Please check your connection", delegate: self, cancelButtonTitle: "OK")
                 alert.show()
                 //self.currentPathInvalid()
-            }else if((sourceMethods.sharedInstance.currentConnectionState == ConnectionState.WWAN && sourceMethods.sharedInstance.allowWWAN == true) || (sourceMethods.sharedInstance.currentConnectionState == ConnectionState.WIFI)){
+            }else if(sourceMethods.sharedInstance.ConnectionAvailable()){
                 spinner.startAnimating()
                 blurEffect.hidden = false
                 
@@ -292,7 +291,7 @@ class audioPlayer:UIViewController,AVAudioPlayerDelegate {
         switch(currentMode){
         case AudioPlayerState.Play_Multi:
             
-            if(!(sourceMethods.sharedInstance.allowWWAN == true && sourceMethods.sharedInstance.currentConnectionState == ConnectionState.WWAN) && sourceMethods.sharedInstance.currentConnectionState != ConnectionState.WIFI){
+            if(!sourceMethods.sharedInstance.ConnectionAvailable()){
                 // Get Current Index
                 var begIndex:NSInteger = NSInteger()
                 // Get Index of New Path
@@ -328,7 +327,7 @@ class audioPlayer:UIViewController,AVAudioPlayerDelegate {
             
             break
         case AudioPlayerState.Play_Single:
-            if((sourceMethods.sharedInstance.allowWWAN == true && sourceMethods.sharedInstance.currentConnectionState == ConnectionState.WWAN) || sourceMethods.sharedInstance.currentConnectionState == ConnectionState.WIFI){
+            if(sourceMethods.sharedInstance.ConnectionAvailable()){
                 // Give the current Video Path to the player and set the player up
                 self.initializePlayerWithFile(mainData.allKeysForObject(currentPath).first as! String)
             }else{

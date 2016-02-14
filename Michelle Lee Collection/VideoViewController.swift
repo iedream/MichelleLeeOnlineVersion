@@ -15,36 +15,6 @@ enum FileType: Int {
     case URL
 }
 
-public class CollectionViewCell: UICollectionViewCell{
-    var imageView:UIImageView = UIImageView.init()
-    let textLabel:UILabel = UILabel.init()
-    var type:FileType = FileType.LOCAL
-    
-    dynamic var imageViewAlpha: NSNumber? {
-        get { return self.imageView.alpha}
-        set {
-            if(self.type == FileType.URL){
-                self.imageView.alpha =  CGFloat.init(newValue!)
-            }
-        }
-    }
-    
-    public override func layoutSubviews() {
-        super.layoutSubviews()
-        
-        // Create text label
-        textLabel.textColor = UIColor.whiteColor()
-        textLabel.backgroundColor  = UIColor.clearColor()
-        textLabel.adjustsFontSizeToFitWidth = true
-        textLabel.frame = CGRectMake(self.contentView.frame.origin.x, self.contentView.bounds.height - self.contentView.bounds.height/4, self.contentView.bounds.width, self.contentView.bounds.height/4)
-        
-        // Create image view
-        imageView.frame = self.contentView.bounds
-        imageView.addSubview(textLabel)
-        self.contentView.addSubview(imageView)
-    }
-}
-
 class VideoViewController: UIViewController,UICollectionViewDelegateFlowLayout, UICollectionViewDataSource,UIPickerViewDelegate,UIPickerViewDataSource {
     
     // Background Image Related
@@ -192,18 +162,19 @@ class VideoViewController: UIViewController,UICollectionViewDelegateFlowLayout, 
         if(mainDicSingle.count > 0){
             name = (mainDicSingle.allKeys as NSArray).objectAtIndex(indexPath.row) as! String
             if(mainDicSingle[name]![0] == "url"){
-                cell.type = FileType.URL
+                cell.setCellAlpha(true)
             }else{
-                cell.type = FileType.LOCAL
+                cell.setCellAlpha(false)
             }
         }else if(mainDicMulti.count > 0 && multiCurrentName == " "){
             name = (mainDicMulti.allKeys as NSArray).objectAtIndex(indexPath.row) as! String
+            cell.setCellAlpha(false)
         }else if(mainDicMulti.count > 0 ){
             name = ((mainDicMulti[multiCurrentName]?.allKeys)! as NSArray).objectAtIndex(indexPath.row) as! String
             if(mainDicMulti[multiCurrentName]![name]!![0] == "url"){
-                cell.type = FileType.URL
+                cell.setCellAlpha(true)
             }else{
-                cell.type = FileType.LOCAL
+                cell.setCellAlpha(false)
             }
         }
         cell.textLabel.text = name

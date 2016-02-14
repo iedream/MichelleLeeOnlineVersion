@@ -17,13 +17,17 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func application(application: UIApplication, didFinishLaunchingWithOptions launchOptions: [NSObject: AnyObject]?) -> Bool {
         // Override point for customization after application launch.
+        
+        // Populate Playist from Plist
         Variables.sharedInstance.populatePlayListFromPlist("ModifiedPlayist.plist")
         
+        // Set Up Check For Connection
         self.internetReach = Reachability.reachabilityForInternetConnection()
         self.internetReach?.startNotifier()
-        self.checkStatus((self.internetReach?.currentReachabilityStatus())!)
-        
         NSNotificationCenter.defaultCenter().addObserver(self, selector: "checkForReachability:", name: kReachabilityChangedNotification, object: nil)
+        
+        // Check For Connection
+        self.checkStatus((self.internetReach?.currentReachabilityStatus())!)
         
         return true
     }
@@ -35,16 +39,16 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         self.checkStatus(myNetWorkStatus)
     }
     
+    // Actually Populate Connection Variable
     func checkStatus(currentNetWork:NetworkStatus){
         if(currentNetWork.rawValue == NotReachable.rawValue){
-            sourceMethods.sharedInstance.currentConnectionState = ConnectionState.NONE
+            sourceMethods.sharedInstance.setCurrentConnectState(ConnectionState.NONE)
         }else if(currentNetWork.rawValue == ReachableViaWiFi.rawValue){
-            sourceMethods.sharedInstance.currentConnectionState = ConnectionState.WIFI;
+            sourceMethods.sharedInstance.setCurrentConnectState(ConnectionState.WIFI);
             
         }else if(currentNetWork.rawValue == ReachableViaWWAN.rawValue){
-            sourceMethods.sharedInstance.currentConnectionState = ConnectionState.WWAN
+            sourceMethods.sharedInstance.setCurrentConnectState(ConnectionState.WWAN);
         }
-        AppearanceControl.grayOutTableCell()
     }
 
 
