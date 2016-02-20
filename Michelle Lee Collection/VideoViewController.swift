@@ -208,6 +208,7 @@ class VideoViewController: UIViewController,UICollectionViewDelegateFlowLayout, 
     
     func collectionView(collectionView: UICollectionView, didSelectItemAtIndexPath indexPath: NSIndexPath) {
          noResult.hidden = true
+         pickerView.hidden = true
         if(mainDicMulti.count > 0 && multiCurrentName == " "){
             // Reload collection view data to individual sections
             let name:String = mainDicMulti.allKeys[indexPath.row] as! String
@@ -256,9 +257,13 @@ class VideoViewController: UIViewController,UICollectionViewDelegateFlowLayout, 
         return pickerViewData[row]
     }
     
-    func pickerView(pickerView: UIPickerView, attributedTitleForRow row: Int, forComponent component: Int) -> NSAttributedString? {
-        let titleData = pickerViewData[row]
-        let myTitle = NSAttributedString(string: titleData, attributes: [NSFontAttributeName:UIFont(name: "Georgia", size: 15.0)!,NSForegroundColorAttributeName:UIColor.blueColor()])
+    func pickerView(pickerView: UIPickerView, viewForRow row: Int, forComponent component: Int, reusingView view: UIView?) -> UIView {
+        let titleData:String = pickerViewData[row]
+        let myTitle:UILabel = UILabel.init()
+        myTitle.text = titleData
+        myTitle.textColor = UIColor.whiteColor()
+        myTitle.adjustsFontSizeToFitWidth = true
+        
         return myTitle
     }
     
@@ -268,15 +273,31 @@ class VideoViewController: UIViewController,UICollectionViewDelegateFlowLayout, 
         
         // decide which subsection are we in
         let name:String = pickerViewData[row];
-        let subDict:NSDictionary = mainDicMulti[name] as! NSDictionary
         
-        // set up video player for playing
-        videoPlayer.sharedInstance.setMode(Multiple_Rotate)
-        videoPlayer.sharedInstance.addObserverForVideo()
+        if(mainDicMulti.count > 0){
+            let nameArr = name.characters.split{$0 == "/"}.map(String.init)
+
+            let subDict:NSDictionary = mainDicMulti[nameArr[1]] as! NSDictionary
         
-        // get the video path and pass it to video player
-        videoPlayer.sharedInstance.setVideoData(subDict.allValues as! [NSArray], frame: videoPlayerView.frame)
-        videoPlayer.sharedInstance.playVideo(subDict[(txtField.text?.lowercaseString.stringByTrimmingCharactersInSet(NSCharacterSet.whitespaceCharacterSet()))!]! as! NSArray)
+            // set up video player for playing
+            videoPlayer.sharedInstance.setMode(Multiple_Rotate)
+            videoPlayer.sharedInstance.addObserverForVideo()
+        
+            // get the video path and pass it to video player
+            videoPlayer.sharedInstance.setVideoData(subDict.allValues as! [NSArray], frame: videoPlayerView.frame)
+            videoPlayer.sharedInstance.playVideo(subDict[nameArr[0]] as! NSArray)
+        }else{
+            
+            let subDict:NSDictionary = mainDicSingle
+            
+            // set up video player for playing
+            videoPlayer.sharedInstance.setMode(Multiple_Rotate)
+            videoPlayer.sharedInstance.addObserverForVideo()
+            
+            // get the video path and pass it to video player
+            videoPlayer.sharedInstance.setVideoData(subDict.allValues as! [NSArray], frame: videoPlayerView.frame)
+            videoPlayer.sharedInstance.playVideo(subDict[name] as! NSArray)
+        }
 
         
         self.addChildViewController(videoPlayer.sharedInstance)
@@ -333,7 +354,7 @@ class VideoViewController: UIViewController,UICollectionViewDelegateFlowLayout, 
     
     @IBAction func clearVideo(sender: AnyObject) {
         videoPlayer.sharedInstance.clear()
-        
+        pickerView.hidden = true
         let inactiveButton:[UIButton] = [singleRotateButton,multipleRotateButton]
         let activeButton:[UIButton] = []
         self.buttonActiveandInactive(activeButton, inactiveButtons: inactiveButton)
@@ -376,25 +397,26 @@ class VideoViewController: UIViewController,UICollectionViewDelegateFlowLayout, 
     @IBAction func searchVideo(sender: AnyObject) {
         var results:[String:AnyObject] = [String:AnyObject]()
         
+        let searchText:String = (txtField.text?.lowercaseString.stringByTrimmingCharactersInSet(NSCharacterSet.whitespaceCharacterSet()))!
+        
         if(mainDicSingle.count > 0){
-            for (name,path) in mainDicSingle{
-                if(name as? String == txtField.text?.lowercaseString.stringByTrimmingCharactersInSet(NSCharacterSet.whitespaceCharacterSet())){
+            for (name,path) in mainDicSingle {
+                if(name.containsString(searchText)){
                     results[name as! String] = path as! NSArray
                 }
             }
-
         }else if(mainDicMulti.count > 0){
             for(key,value) in mainDicMulti{
                 for(name,path) in value as! NSDictionary{
-                    if(name as? String == txtField.text?.lowercaseString.stringByTrimmingCharactersInSet(NSCharacterSet.whitespaceCharacterSet())){
-                        let toBeDict:[String:NSArray] = [name as! String:path as! NSArray]
-                        results[key as! String] = toBeDict
+                    if(name.containsString(searchText)){
+                        let finalName:String = (name as! String) + "/" + (key as! String)
+                        results[finalName] = path as! NSArray
                     }
                 }
             }
         }
         
-        if(results.count == 1){
+        /*if(results.count == 1){
             // get video path and pass it to the video player
             if(mainDicSingle.count > 0){
                 videoPlayer.sharedInstance.setVideoData(mainDicSingle.allValues as! [NSArray], frame: videoPlayerView.frame)
@@ -418,7 +440,7 @@ class VideoViewController: UIViewController,UICollectionViewDelegateFlowLayout, 
             let activeButton:[UIButton] = [singleRotateButton]
             let inactiveButton:[UIButton] = [multipleRotateButton]
             self.buttonActiveandInactive(activeButton, inactiveButtons: inactiveButton)
-        }else if(results.count > 1){
+        }else*/ if(results.count >= 1){
             // Populate picker view and show it
             pickerView.hidden = false
             pickerViewData = [String](results.keys)

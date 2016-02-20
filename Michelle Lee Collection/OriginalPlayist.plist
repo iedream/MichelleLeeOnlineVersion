@@ -8,7 +8,7 @@
 			<key>退出</key>
 			<array>
 				<string>url</string>
-				<string>http://url.mcvmc.com/xiami.php/1769078647.mp3</string>
+				<string>http://url.mcvmc.com/kuwo.php/555735.mp3</string>
 			</array>
 		</dict>
 		<key>惜君</key>
@@ -16,32 +16,32 @@
 			<key>我只在乎你</key>
 			<array>
 				<string>url</string>
-				<string>http://url.mcvmc.com/xiami.php/1771436924.mp3</string>
+				<string>http://url.mcvmc.com/kuwo.php/3142765.mp3</string>
 			</array>
 			<key>漫步人生路</key>
 			<array>
 				<string>url</string>
-				<string>http://url.mcvmc.com/xiami.php/1771483713.mp3</string>
+				<string>http://url.mcvmc.com/kuwo.php/3193073.mp3</string>
 			</array>
 			<key>夜来香</key>
 			<array>
 				<string>url</string>
-				<string>http://url.mcvmc.com/xiami.php/1771483714.mp3</string>
+				<string>http://url.mcvmc.com/kuwo.php/3193074.mp3</string>
 			</array>
 			<key>你怎么说</key>
 			<array>
 				<string>url</string>
-				<string>http://url.mcvmc.com/xiami.php/1771553469.mp3</string>
+				<string>http://url.mcvmc.com/kuwo.php/1881095.mp3</string>
 			</array>
-			<key>何日人生路</key>
+			<key>何日君再来</key>
 			<array>
 				<string>url</string>
-				<string>http://url.mcvmc.com/xiami.php/1771483715.mp3</string>
+				<string>http://url.mcvmc.com/kuwo.php/3193069.mp3</string>
 			</array>
 			<key>南海姑娘</key>
 			<array>
 				<string>url</string>
-				<string>http://url.mcvmc.com/xiami.php/1771348578.mp3</string>
+				<string>http://url.mcvmc.com/kuwo.php/541894.mp3</string>
 			</array>
 		</dict>
 		<key>当我身边空无一人</key>
@@ -59,7 +59,7 @@
 			<key>多傻</key>
 			<array>
 				<string>url</string>
-				<string>http://url.mcvmc.com/xiami.php/1775025878.mp3</string>
+				<string>http://url.mcvmc.com/kuwo.php/6695385.mp3</string>
 			</array>
 		</dict>
 	</dict>
@@ -145,11 +145,6 @@
 				<array>
 					<string>url</string>
 					<string>https://dl-web.dropbox.com/s/n3apkenavkvbh28/%E5%93%AD%E7%A0%82.mp4?</string>
-				</array>
-				<key>南海姑娘</key>
-				<array>
-					<string>url</string>
-					<string>https://dl-web.dropbox.com/s/jk7k0cioj0n0dzu/%E5%8D%97%E6%B5%B7%E5%A7%91%E5%A8%98.mp4?</string>
 				</array>
 				<key>大约在冬季</key>
 				<array>

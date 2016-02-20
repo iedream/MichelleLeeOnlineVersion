@@ -83,12 +83,11 @@ class AbulmViewController: UIViewController,UITableViewDelegate,UITableViewDataS
         audioTableView.backgroundColor = UIColor.clearColor()
         audioTableView.delegate = self
         audioTableView.dataSource = self
-        //audioTableView.registerClass(CustomAudioLocalCell.classForCoder(), forCellReuseIdentifier: "AudioLocal")
-        //audioTableView.registerClass(CustomAudioURLCell.classForCoder(), forCellReuseIdentifier: "AudioURL")
         
         pickerView.delegate = self
         pickerView.dataSource = self
         pickerView.hidden = true
+        pickerView.backgroundColor = UIColor.clearColor()
         
         videoPlayerView.hidden = true
         clearVideoButton.hidden = true
@@ -145,6 +144,8 @@ class AbulmViewController: UIViewController,UITableViewDelegate,UITableViewDataS
     func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
         audioTableView.deselectRowAtIndexPath(indexPath, animated: true)
         
+        pickerView.hidden = true
+        
         let row = indexPath.row
         let name:String = tableTitleArray.objectAtIndex(row) as! String
         noResult.hidden = true
@@ -193,9 +194,14 @@ class AbulmViewController: UIViewController,UITableViewDelegate,UITableViewDataS
         return pickerViewData[row]
     }
     
-    func pickerView(pickerView: UIPickerView, attributedTitleForRow row: Int, forComponent component: Int) -> NSAttributedString? {
-        let titleData = pickerViewData[row]
-        let myTitle = NSAttributedString(string: titleData, attributes: [NSFontAttributeName:UIFont(name: "Georgia", size: 15.0)!,NSForegroundColorAttributeName:UIColor.blueColor()])
+    
+    func pickerView(pickerView: UIPickerView, viewForRow row: Int, forComponent component: Int, reusingView view: UIView?) -> UIView {
+        let titleData:String = pickerViewData[row]
+        let myTitle:UILabel = UILabel.init()
+        myTitle.text = titleData
+        myTitle.textColor = UIColor.whiteColor()
+        myTitle.adjustsFontSizeToFitWidth = true
+        
         return myTitle
     }
     
@@ -203,7 +209,11 @@ class AbulmViewController: UIViewController,UITableViewDelegate,UITableViewDataS
     func pickerView(pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
         
         let name:String = pickerViewData[row];
-        let subDict:NSDictionary = Variables.sharedInstance.allAmblum.objectForKey(name) as! NSDictionary
+        
+        let nameArr = name.characters.split{$0 == "/"}.map(String.init)
+        
+        
+        let subDict:NSDictionary = Variables.sharedInstance.allAmblum.objectForKey(nameArr[1]) as! NSDictionary
         currentDic.removeAllObjects()
         currentDic = NSMutableDictionary.init(dictionary:subDict)
         
@@ -211,8 +221,7 @@ class AbulmViewController: UIViewController,UITableViewDelegate,UITableViewDataS
         audioPlayer.sharedInstance.setDatas(currentDic)
         
         // Set Up Audio Player, Audio Player Mode, Audio Player Property
-        let subName:String = (txtFiled.text?.lowercaseString.stringByTrimmingCharactersInSet(NSCharacterSet.whitespaceCharacterSet()))!
-        audioPlayer.sharedInstance.setUpPlayer(subName, objectToBePlay: subDict.objectForKey(subName) as! NSArray, actSlider: slider, actCurrentLabel: currentTimeLabel, actEndLabel: endTimeLabel, videoButton: mvButton, actSpinner: progressBar,actblurEffect: blurView)
+        audioPlayer.sharedInstance.setUpPlayer(nameArr[0], objectToBePlay: subDict.objectForKey(nameArr[0]) as! NSArray, actSlider: slider, actCurrentLabel: currentTimeLabel, actEndLabel: endTimeLabel, videoButton: mvButton, actSpinner: progressBar,actblurEffect: blurView)
         
         // Set Active and Inactive Buttons
         let activeButton:[UIButton] = [pauseButton,singleRotateButton]
@@ -240,6 +249,7 @@ class AbulmViewController: UIViewController,UITableViewDelegate,UITableViewDataS
         
         // Clear audio player
         audioPlayer.sharedInstance.clearPlayer(slider, actCurrentLabel: currentTimeLabel, actEndLabel: endTimeLabel)
+        pickerView.hidden = true
         
         // All Buttons Inactive
         let inactiveButton:[UIButton] = [playButton,pauseButton,singleRotateButton,multipleRotateButton]
@@ -250,6 +260,7 @@ class AbulmViewController: UIViewController,UITableViewDelegate,UITableViewDataS
     // Go Back to main menu
     @IBAction func backToHomeMenu(sender: AnyObject) {
         noResult.hidden = true
+        pickerView.hidden = true
         tableTitleArray.removeAllObjects()
         currentDic.removeAllObjects()
         tableTitleArray = NSMutableArray.init(array:Variables.sharedInstance.allAmblum.allKeys)
@@ -326,33 +337,17 @@ class AbulmViewController: UIViewController,UITableViewDelegate,UITableViewDataS
     // search for songs
     @IBAction func searchForSongs(sender: AnyObject) {
         let txtFieldText:String = (txtFiled.text?.lowercaseString.stringByTrimmingCharactersInSet(NSCharacterSet.whitespaceCharacterSet()))!
-        var results:[String:[String:NSArray]] = [String:[String:NSArray]]()
+        var results:[String:NSArray] = [String:NSArray]()
         for(key,value) in Variables.sharedInstance.allAmblum{
             for(name,path) in value as! NSMutableDictionary{
-                if(name as! String == txtFieldText){
-                    results[key as! String] = [name as! String:path as! NSArray]
+                if(name.containsString(txtFieldText)){
+                    let finalName:String = (name as! String) + "/" + (key as! String)
+                    results[finalName] = (path as! NSArray)
                 }
             }
         }
         
-        // if there is only one result, then play that one
-        if(results.count == 1){
-            let resultsDic:[String:NSArray] = Array(results.values).first!
-            let dict:[String:NSArray] = [String:NSArray](dictionaryLiteral: resultsDic.first!)
-            
-            currentDic.removeAllObjects()
-            currentDic = NSMutableDictionary.init(dictionary: Variables.sharedInstance.allAmblum.objectForKey(results.keys.first!)! as! NSDictionary)
-            
-            // Set Up Audio Player, Audio Player Mode, Audio Player Property
-            audioPlayer.sharedInstance.setDatas(currentDic)
-            audioPlayer.sharedInstance.setUpPlayer(txtFieldText, objectToBePlay: dict[txtFieldText]!, actSlider: slider, actCurrentLabel: currentTimeLabel, actEndLabel: endTimeLabel, videoButton: mvButton, actSpinner: progressBar,actblurEffect: blurView)
-    
-            
-            // Set Active and Inactive Buttons
-            let activeButton:[UIButton] = [pauseButton,singleRotateButton]
-            let inactiveButton:[UIButton] = [playButton,multipleRotateButton]
-            self.buttonActiveandInactive(activeButton, inactiveButtons: inactiveButton)
-        }else if(results.count > 1){
+        if(results.count >= 1){
             pickerView.hidden = false
             pickerViewData = [String](results.keys)
             pickerView.reloadComponent(0)

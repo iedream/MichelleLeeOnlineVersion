@@ -129,9 +129,7 @@ class audioPlayer:UIViewController,AVAudioPlayerDelegate,NSURLConnectionDelegate
                 progressBar.hidden = false
                 progressBar.progress = 0.0
                 connection?.cancel()
-                if(responseData != nil){
-                    responseData.length = 0
-                }
+                self.clearResponseData()
                 
                 /*spinner.startAnimating()
                 blurEffect.hidden = false
@@ -415,7 +413,8 @@ class audioPlayer:UIViewController,AVAudioPlayerDelegate,NSURLConnectionDelegate
         if(connection != nil){
             connection!.cancel()
         }
-        responseData.length = 0
+        self.clearResponseData()
+        
 
         
         // Disable Slider
@@ -434,6 +433,12 @@ class audioPlayer:UIViewController,AVAudioPlayerDelegate,NSURLConnectionDelegate
         
         if(responseRes.statusCode == 200){
             downloadSize = Float.init(responseRes.expectedContentLength)
+        }else{
+            connection.cancel()
+            let alert:UIAlertView = UIAlertView(title: "Audio Source No Longer Exist", message: "The audio source no longer exist. Please contact app owner for an update.", delegate: self, cancelButtonTitle: "OK")
+            alert.show()
+            progressBar.hidden = true
+            blurView.hidden = true
         }
     }
 
@@ -449,7 +454,7 @@ class audioPlayer:UIViewController,AVAudioPlayerDelegate,NSURLConnectionDelegate
         blurView.hidden = true
         do{
             let playerData = NSData.init(data: responseData)
-            responseData.length = 0
+            self.clearResponseData()
             self.player = try AVAudioPlayer(data: playerData)
         }catch{
             //Handle the error
@@ -462,11 +467,18 @@ class audioPlayer:UIViewController,AVAudioPlayerDelegate,NSURLConnectionDelegate
     
     func connection(connection: NSURLConnection, didFailWithError error: NSError) {
         self.connection = nil
-        responseData.length = 0
+        self.clearResponseData()
+        progressBar.hidden = true
+        blurView.hidden = true
         //Handle the error
         let alert:UIAlertView = UIAlertView(title: "Stream Audio Failed", message: "The Audio cannot be loaded.", delegate: self, cancelButtonTitle: "OK")
         alert.show()
     }
-
+    
+    func clearResponseData(){
+        if(responseData != nil){
+            responseData.length = 0
+        }
+    }
 }
 
