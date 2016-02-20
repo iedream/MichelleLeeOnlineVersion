@@ -21,9 +21,9 @@ class AbulmViewController: UIViewController,UITableViewDelegate,UITableViewDataS
     @IBOutlet var multipleRotateButton: UIButton!
     @IBOutlet var playButton: UIButton!
     @IBOutlet var pauseButton: UIButton!
-    @IBOutlet weak var spinnerView: UIActivityIndicatorView!
-    @IBOutlet weak var blurEffectView: UIVisualEffectView!
 
+    @IBOutlet weak var blurView: UIVisualEffectView!
+    @IBOutlet weak var progressBar: UIProgressView!
 
     
     // AudioPlayer States
@@ -93,12 +93,14 @@ class AbulmViewController: UIViewController,UITableViewDelegate,UITableViewDataS
         videoPlayerView.hidden = true
         clearVideoButton.hidden = true
     
+        blurView.hidden = true
+        progressBar.hidden = true
         
         noResult.adjustsFontSizeToFitWidth = true
         noResult.backgroundColor = UIColor.redColor()
         noResult.hidden = true
         
-        blurEffectView.hidden = true
+        //blurView.hidden = true
 
         timer = NSTimer.scheduledTimerWithTimeInterval(0.5, target: self, selector: Selector("updateFullScreenState"), userInfo: nil, repeats: true)
         
@@ -106,7 +108,7 @@ class AbulmViewController: UIViewController,UITableViewDelegate,UITableViewDataS
         let inactiveButton:[UIButton] = [playButton,pauseButton,singleRotateButton,multipleRotateButton,mvButton]
         let activeButton:[UIButton] = [];
         self.buttonActiveandInactive(activeButton, inactiveButtons:inactiveButton)
-        audioPlayer.sharedInstance.setAudioAtBeginning(slider, actCurrentLabel: currentTimeLabel, actEndLabel: endTimeLabel, actSpinner: spinnerView, actBlurEffect: blurEffectView)
+        audioPlayer.sharedInstance.setAudioAtBeginning(slider, actCurrentLabel: currentTimeLabel, actEndLabel: endTimeLabel, actSpinner: progressBar, actBlurEffect: blurView)
     }
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
@@ -149,7 +151,7 @@ class AbulmViewController: UIViewController,UITableViewDelegate,UITableViewDataS
         
         // if the count equals, then still at main menu, so clear table view and populate it with sub menu, and assign correct properties
         // if the cound doesn't equals, then in sub menu, so set up player and properties, and change audio view
-        if(tableTitleArray.count == Variables.sharedInstance.allAmblum.count){ // Set Property
+        if(tableTitleArray.isEqualToArray(Variables.sharedInstance.allAmblum.allKeys)){ // Set Property
             currentDic.removeAllObjects()
             currentDic = NSMutableDictionary.init(dictionary:Variables.sharedInstance.allAmblum.objectForKey(name) as! NSDictionary )
             
@@ -165,7 +167,7 @@ class AbulmViewController: UIViewController,UITableViewDelegate,UITableViewDataS
             
             
             // Set Up Audio Player, Audio Player Mode, Audio Player Property
-            audioPlayer.sharedInstance.setUpPlayer(name, objectToBePlay: objectToBePlayed, actSlider: slider, actCurrentLabel: currentTimeLabel, actEndLabel: endTimeLabel, videoButton: mvButton, actSpinner: spinnerView,actblurEffect: blurEffectView)
+            audioPlayer.sharedInstance.setUpPlayer(name, objectToBePlay: objectToBePlayed, actSlider: slider, actCurrentLabel: currentTimeLabel, actEndLabel: endTimeLabel, videoButton: mvButton, actSpinner: progressBar,actblurEffect: blurView)
             
             // Set Active and Inactive Buttons
             let activeButton:[UIButton] = [pauseButton,singleRotateButton]
@@ -210,7 +212,7 @@ class AbulmViewController: UIViewController,UITableViewDelegate,UITableViewDataS
         
         // Set Up Audio Player, Audio Player Mode, Audio Player Property
         let subName:String = (txtFiled.text?.lowercaseString.stringByTrimmingCharactersInSet(NSCharacterSet.whitespaceCharacterSet()))!
-        audioPlayer.sharedInstance.setUpPlayer(subName, objectToBePlay: subDict.objectForKey(subName) as! NSArray, actSlider: slider, actCurrentLabel: currentTimeLabel, actEndLabel: endTimeLabel, videoButton: mvButton, actSpinner: spinnerView,actblurEffect: blurEffectView)
+        audioPlayer.sharedInstance.setUpPlayer(subName, objectToBePlay: subDict.objectForKey(subName) as! NSArray, actSlider: slider, actCurrentLabel: currentTimeLabel, actEndLabel: endTimeLabel, videoButton: mvButton, actSpinner: progressBar,actblurEffect: blurView)
         
         // Set Active and Inactive Buttons
         let activeButton:[UIButton] = [pauseButton,singleRotateButton]
@@ -343,7 +345,7 @@ class AbulmViewController: UIViewController,UITableViewDelegate,UITableViewDataS
             
             // Set Up Audio Player, Audio Player Mode, Audio Player Property
             audioPlayer.sharedInstance.setDatas(currentDic)
-            audioPlayer.sharedInstance.setUpPlayer(txtFieldText, objectToBePlay: dict[txtFieldText]!, actSlider: slider, actCurrentLabel: currentTimeLabel, actEndLabel: endTimeLabel, videoButton: mvButton, actSpinner: spinnerView,actblurEffect: blurEffectView)
+            audioPlayer.sharedInstance.setUpPlayer(txtFieldText, objectToBePlay: dict[txtFieldText]!, actSlider: slider, actCurrentLabel: currentTimeLabel, actEndLabel: endTimeLabel, videoButton: mvButton, actSpinner: progressBar,actblurEffect: blurView)
     
             
             // Set Active and Inactive Buttons
@@ -471,6 +473,4 @@ class AbulmViewController: UIViewController,UITableViewDelegate,UITableViewDataS
             }
         }
     }
-
-    
 }

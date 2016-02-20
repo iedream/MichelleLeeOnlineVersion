@@ -20,7 +20,8 @@ enum AudioPlayerState : Int{
 }
 
 
-class audioPlayer:UIViewController,AVAudioPlayerDelegate {
+class audioPlayer:UIViewController,AVAudioPlayerDelegate,NSURLConnectionDelegate
+{
     
     // Singleton
     static let sharedInstance = audioPlayer()
@@ -33,8 +34,9 @@ class audioPlayer:UIViewController,AVAudioPlayerDelegate {
     var slider = UISlider()
     
     // Spinner
-    var spinner = UIActivityIndicatorView()
-    var blurEffect = UIVisualEffectView()
+    var blurView:UIVisualEffectView!
+    var progressBar:UIProgressView!
+    var connection:NSURLConnection?
     
     // States
     var currentMode:AudioPlayerState = AudioPlayerState.Not_Init
@@ -55,6 +57,8 @@ class audioPlayer:UIViewController,AVAudioPlayerDelegate {
     var mainDataOrder:NSArray = NSArray()
     var currentPath:NSArray = NSArray()
     var localMusicArray:NSArray = NSArray()
+    var responseData:NSMutableData!
+    var downloadSize:Float!
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -121,7 +125,15 @@ class audioPlayer:UIViewController,AVAudioPlayerDelegate {
                 alert.show()
                 //self.currentPathInvalid()
             }else if(sourceMethods.sharedInstance.ConnectionAvailable()){
-                spinner.startAnimating()
+                blurView.hidden = false
+                progressBar.hidden = false
+                progressBar.progress = 0.0
+                connection?.cancel()
+                if(responseData != nil){
+                    responseData.length = 0
+                }
+                
+                /*spinner.startAnimating()
                 blurEffect.hidden = false
                 
                 let time = dispatch_time(dispatch_time_t(DISPATCH_TIME_NOW), 1 * Int64(NSEC_PER_SEC))
@@ -140,7 +152,10 @@ class audioPlayer:UIViewController,AVAudioPlayerDelegate {
                     self.spinner.stopAnimating()
                     self.blurEffect.hidden = true
                     self.setUpUIForPlayer(name)
-                }
+                }*/
+                let myURL:NSURL = NSURL(string: self.currentPath[1] as! String)!
+                let request:NSURLRequest = NSURLRequest.init(URL: myURL)
+                connection = NSURLConnection.init(request: request, delegate: self, startImmediately: true)!
             }
         }else if(currentPath[0].isEqualToString("local")){
             do{
@@ -157,11 +172,11 @@ class audioPlayer:UIViewController,AVAudioPlayerDelegate {
     }
     
     // Set Up player
-    func setUpPlayer(name:String , objectToBePlay:NSArray, actSlider:UISlider, actCurrentLabel:UILabel, actEndLabel:UILabel, videoButton:UIButton,actSpinner:UIActivityIndicatorView,actblurEffect:UIVisualEffectView){
+    func setUpPlayer(name:String , objectToBePlay:NSArray, actSlider:UISlider, actCurrentLabel:UILabel, actEndLabel:UILabel, videoButton:UIButton,actSpinner:UIProgressView,actblurEffect:UIVisualEffectView){
         // Assign View Property
-        blurEffect = actblurEffect
-        spinner = actSpinner
         slider = actSlider
+        blurView = actblurEffect
+        progressBar = actSpinner
         currentTimeLable = actCurrentLabel
         endTimeLable = actEndLabel
         mvButton = videoButton
@@ -287,7 +302,7 @@ class audioPlayer:UIViewController,AVAudioPlayerDelegate {
         }
     }*/
     
-    func getNextSong(){
+    private func getNextSong(){
         switch(currentMode){
         case AudioPlayerState.Play_Multi:
             
@@ -363,13 +378,13 @@ class audioPlayer:UIViewController,AVAudioPlayerDelegate {
 
     }
         
-    func setAudioAtBeginning(actSlider:UISlider, actCurrentLabel:UILabel, actEndLabel:UILabel, actSpinner:UIActivityIndicatorView,actBlurEffect:UIVisualEffectView){
+    func setAudioAtBeginning(actSlider:UISlider, actCurrentLabel:UILabel, actEndLabel:UILabel, actSpinner:UIProgressView,actBlurEffect:UIVisualEffectView){
         // Assign View Property
+        blurView = actBlurEffect
+        progressBar = actSpinner
         slider = actSlider
         currentTimeLable = actCurrentLabel
         endTimeLable = actEndLabel
-        spinner = actSpinner
-        blurEffect = actBlurEffect
         
         // Set Up Slider
         slider.userInteractionEnabled = false
@@ -396,6 +411,11 @@ class audioPlayer:UIViewController,AVAudioPlayerDelegate {
         
         // Remove Timer
         timer.invalidate()
+        
+        if(connection != nil){
+            connection!.cancel()
+        }
+        responseData.length = 0
 
         
         // Disable Slider
@@ -406,7 +426,47 @@ class audioPlayer:UIViewController,AVAudioPlayerDelegate {
         currentTimeLable.text = ""
         endTimeLable.text = ""
     }
+    
+    func connection(connection: NSURLConnection!, didReceiveResponse response: NSURLResponse!) {
+        responseData = NSMutableData.init()
+        
+        let responseRes:NSHTTPURLResponse = response as! NSHTTPURLResponse
+        
+        if(responseRes.statusCode == 200){
+            downloadSize = Float.init(responseRes.expectedContentLength)
+        }
+    }
 
+    func connection(connection: NSURLConnection!, didReceiveData conData: NSData!) {
+        // Append the recieved chunk of data to our data object
+        responseData.appendData(conData)
+        progressBar.progress =  Float.init(responseData.length)/downloadSize
+    }
+    
+    func connectionDidFinishLoading(connection: NSURLConnection!) {
+        self.connection = nil
+        progressBar.hidden = true
+        blurView.hidden = true
+        do{
+            let playerData = NSData.init(data: responseData)
+            responseData.length = 0
+            self.player = try AVAudioPlayer(data: playerData)
+        }catch{
+            //Handle the error
+            let alert:UIAlertView = UIAlertView(title: "Stream Audio Failed", message: "The Audio cannot be loaded.", delegate: self, cancelButtonTitle: "OK")
+            alert.show()
+        }
+
+        self.setUpUIForPlayer(pathName)
+    }
+    
+    func connection(connection: NSURLConnection, didFailWithError error: NSError) {
+        self.connection = nil
+        responseData.length = 0
+        //Handle the error
+        let alert:UIAlertView = UIAlertView(title: "Stream Audio Failed", message: "The Audio cannot be loaded.", delegate: self, cancelButtonTitle: "OK")
+        alert.show()
+    }
 
 }
 
