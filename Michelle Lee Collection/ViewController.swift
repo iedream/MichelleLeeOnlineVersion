@@ -88,10 +88,5 @@ class ViewController: UIViewController,UITableViewDataSource,UITableViewDelegate
             
         }
     }
-    
-    override func supportedInterfaceOrientations() -> UIInterfaceOrientationMask {
-            return UIInterfaceOrientationMask.Portrait
-    }
-
 }
 

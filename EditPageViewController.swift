@@ -66,6 +66,14 @@ class EditPageViewController:UIViewController,UITableViewDelegate,UITableViewDat
         blurEffectView.hidden = true
     }
     
+    override func viewWillAppear(animated: Bool) {
+        if(sourceMethods.sharedInstance.allowWWAN){
+            allow3GButton.on = true
+        }else{
+            allow3GButton.on = false
+        }
+    }
+    
     // Populate Current Dic with Local Ipod Files
     private func getIpodLibraryInformation(){
         if(currentState == CurrentFileType.Audio && currentDicAudio.count == 0){
@@ -234,7 +242,7 @@ class EditPageViewController:UIViewController,UITableViewDelegate,UITableViewDat
     
     // Set Allow 3G
     @IBAction func set3G(sender: AnyObject) {
-        sourceMethods.sharedInstance.SetCelluar(allow3GButton.on)
+        sourceMethods.sharedInstance.allowWWAN = allow3GButton.on
     }
     
     

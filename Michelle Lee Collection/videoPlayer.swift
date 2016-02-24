@@ -46,6 +46,8 @@ class videoPlayer: AVPlayerViewController {
         self.videoData = videoData
         self.populatLocalVideos()
         self.view.frame = frame
+        self.view.hidden = false
+        self.addObserver((self.view.superview?.nextResponder())!, forKeyPath: "videoBounds", options: NSKeyValueObservingOptions.New, context: nil)
     }
     
     func playVideo(videoArr:NSArray){
@@ -143,7 +145,12 @@ class videoPlayer: AVPlayerViewController {
             NSNotificationCenter.defaultCenter().removeObserver(videoObserver)
         }
         path = nil
+        
+        if(!self.view.hidden){
+            self.removeObserver((self.view.superview?.nextResponder())!, forKeyPath: "videoBounds")
+        }
+        
+        self.view.hidden = true
         player?.replaceCurrentItemWithPlayerItem(nil)
-        self.view.removeFromSuperview()
     }
 }

@@ -82,7 +82,10 @@ class VideoViewController: UIViewController,UICollectionViewDelegateFlowLayout, 
         noResult.backgroundColor = UIColor.redColor()
         noResult.hidden = true
         
-        timer = NSTimer.scheduledTimerWithTimeInterval(0.00001, target: self, selector: Selector("updateFullScreenState"), userInfo: nil, repeats: true)
+        // add video player view
+        self.addChildViewController(videoPlayer.sharedInstance)
+        self.view.addSubview(videoPlayer.sharedInstance.view)
+        videoPlayer.sharedInstance.view.hidden = true
         
         // Set Active and Inactive Buttons
         let activeButton:[UIButton] = []
@@ -229,11 +232,7 @@ class VideoViewController: UIViewController,UICollectionViewDelegateFlowLayout, 
                 videoPlayer.sharedInstance.setVideoData(mainDicSingle.allValues as! [NSArray], frame: videoPlayerView.frame)
                 videoPlayer.sharedInstance.playVideo(mainDicSingle.allValues[indexPath.row] as! NSArray)
             }
-            
-            // add video player view
-            self.addChildViewController(videoPlayer.sharedInstance)
-            self.view.addSubview(videoPlayer.sharedInstance.view)
-            //videoPlayer.sharedInstance.player?.play()
+        
             
             // Set Active and Inactive Buttons
             let activeButton:[UIButton] = [singleRotateButton]
@@ -299,12 +298,6 @@ class VideoViewController: UIViewController,UICollectionViewDelegateFlowLayout, 
             videoPlayer.sharedInstance.playVideo(subDict[name] as! NSArray)
         }
 
-        
-        self.addChildViewController(videoPlayer.sharedInstance)
-        self.view.addSubview(videoPlayer.sharedInstance.view)
-        //videoPlayer.sharedInstance.player?.play()
-
-        
         // Set Active and Inactive Buttons
         let activeButton:[UIButton] = [singleRotateButton]
         let inactiveButton:[UIButton] = [multipleRotateButton]
@@ -416,31 +409,7 @@ class VideoViewController: UIViewController,UICollectionViewDelegateFlowLayout, 
             }
         }
         
-        /*if(results.count == 1){
-            // get video path and pass it to the video player
-            if(mainDicSingle.count > 0){
-                videoPlayer.sharedInstance.setVideoData(mainDicSingle.allValues as! [NSArray], frame: videoPlayerView.frame)
-                videoPlayer.sharedInstance.playVideo(mainDicSingle[(txtField.text?.lowercaseString.stringByTrimmingCharactersInSet(NSCharacterSet.whitespaceCharacterSet()))!]! as! NSArray)
-            }else if(mainDicMulti.count > 0){
-                let subDict:[String:NSArray] = mainDicMulti[Array(results.keys).first!]! as! [String : NSArray]
-                videoPlayer.sharedInstance.videoData = [NSArray](subDict.values)
-                videoPlayer.sharedInstance.playVideo(subDict[(txtField.text?.lowercaseString.stringByTrimmingCharactersInSet(NSCharacterSet.whitespaceCharacterSet()))!]!)
-            }
-            
-            // set up video player for playing
-            videoPlayer.sharedInstance.setMode(Multiple_Rotate)
-            videoPlayer.sharedInstance.addObserverForVideo()
-            
-            // add video player view
-            self.addChildViewController(videoPlayer.sharedInstance)
-            self.view.addSubview(videoPlayer.sharedInstance.view)
-            //videoPlayer.sharedInstance.player?.play()
-            
-            // Set Active and Inactive Buttons
-            let activeButton:[UIButton] = [singleRotateButton]
-            let inactiveButton:[UIButton] = [multipleRotateButton]
-            self.buttonActiveandInactive(activeButton, inactiveButtons: inactiveButton)
-        }else*/ if(results.count >= 1){
+        if(results.count >= 1){
             // Populate picker view and show it
             pickerView.hidden = false
             pickerViewData = [String](results.keys)
@@ -466,55 +435,21 @@ class VideoViewController: UIViewController,UICollectionViewDelegateFlowLayout, 
         sender.resignFirstResponder()
     }
     
-    override func supportedInterfaceOrientations() -> UIInterfaceOrientationMask {
-        if(isFullScreen){
-            if(UIDevice.currentDevice().orientation.isLandscape){
-                return UIInterfaceOrientationMask.Landscape
-            }else{
-                return UIInterfaceOrientationMask.Portrait
-            }
-            
-        }else{
-            return UIInterfaceOrientationMask.Portrait
-        }
+    func restrictRotation(restriction:Bool){
+        let appDelegate:AppDelegate = UIApplication.sharedApplication().delegate as! AppDelegate
+        appDelegate.restrictRotation = restriction
     }
     
-    func rotateScreenBackToPortrait(){
+    override func observeValueForKeyPath(keyPath: String?, ofObject object: AnyObject?, change: [String : AnyObject]?, context: UnsafeMutablePointer<Void>) {
         
-        videoPlayer.sharedInstance.view.removeFromSuperview()
-        videoPlayer.sharedInstance.view.frame = videoPlayerView.frame
-        self.view.addSubview(videoPlayer.sharedInstance.view)
-    }
-    
-    func updateFullScreenState(){
-        
-        var fullScreenView:Bool = false
-        if(videoPlayer.sharedInstance.videoBounds.width == self.view.frame.width){
-            fullScreenView = true
-        }else if(videoPlayer.sharedInstance.videoBounds.width == self.view.frame.height){
-            fullScreenView = true
-        }else if(videoPlayer.sharedInstance.videoBounds.height == self.view.frame.width){
-            fullScreenView = true
-        }else if(videoPlayer.sharedInstance.videoBounds.height == self.view.frame.height){
-            fullScreenView = true
-        }
-        
-        if(videoPlayer.sharedInstance.view != nil && fullScreenView ){
-            isFullScreen = true
-            
-        }else{
-            if(isFullScreen && UIDevice.currentDevice().orientation.isLandscape){
-                
-                isFullScreen = false
+        if(keyPath == "videoBounds"){
+            if(videoPlayer.sharedInstance.videoBounds.width >= videoPlayerView.frame.width ){
+                self.restrictRotation(false)
+            }else if( !(videoPlayer.sharedInstance.videoBounds.width == 0 && videoPlayer.sharedInstance.videoBounds.origin.x < 0)){
+                self.restrictRotation(true)
                 UIDevice.currentDevice().setValue(UIInterfaceOrientation.Portrait.rawValue, forKey: "orientation")
-                _ = NSTimer.scheduledTimerWithTimeInterval(0.5, target: self, selector: Selector("rotateScreenBackToPortrait"), userInfo: nil, repeats: false)
-                
-            }else if(isFullScreen && UIDevice.currentDevice().orientation.isPortrait){
-                isFullScreen = false
-                rotateScreenBackToPortrait()
+                videoPlayer.sharedInstance.view.frame = videoPlayerView.frame
             }
         }
     }
-
-    
 }

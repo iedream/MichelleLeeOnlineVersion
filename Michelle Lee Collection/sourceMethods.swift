@@ -27,7 +27,7 @@ class sourceMethods:UIViewController,AVAudioPlayerDelegate {
     
     // Connection Related Properties
     private var currentConnectionState:ConnectionState = ConnectionState.NONE
-    private var allowWWAN:Bool = false
+    var allowWWAN:Bool = false
 
     
     override func viewDidLoad() {
@@ -37,10 +37,6 @@ class sourceMethods:UIViewController,AVAudioPlayerDelegate {
     // Setters For Current State
     func setCurrentConnectState(state:ConnectionState){
         currentConnectionState = state
-    }
-    
-    func SetCelluar(turnOn:Bool){
-        allowWWAN = turnOn
     }
     
     // Getters For Current State

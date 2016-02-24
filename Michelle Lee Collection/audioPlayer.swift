@@ -151,6 +151,7 @@ class audioPlayer:UIViewController,AVAudioPlayerDelegate,NSURLConnectionDelegate
                     self.blurEffect.hidden = true
                     self.setUpUIForPlayer(name)
                 }*/
+                pathName = name
                 let myURL:NSURL = NSURL(string: self.currentPath[1] as! String)!
                 let request:NSURLRequest = NSURLRequest.init(URL: myURL)
                 connection = NSURLConnection.init(request: request, delegate: self, startImmediately: true)!
@@ -165,6 +166,7 @@ class audioPlayer:UIViewController,AVAudioPlayerDelegate,NSURLConnectionDelegate
                 alert.show()
                 //self.currentPathInvalid()
             }
+            pathName = name
             self.setUpUIForPlayer(name)
         }
     }
