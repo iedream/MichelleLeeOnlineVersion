@@ -100,6 +100,7 @@ class AbulmViewController: UIViewController,UITableViewDelegate,UITableViewDataS
         noResult.backgroundColor = UIColor.redColor()
         noResult.hidden = true
         
+        
         // All Button Inactive
         let inactiveButton:[UIButton] = [playButton,pauseButton,singleRotateButton,multipleRotateButton,mvButton]
         let activeButton:[UIButton] = [];
@@ -238,8 +239,13 @@ class AbulmViewController: UIViewController,UITableViewDelegate,UITableViewDataS
         
         timer.invalidate()
         
+        // Do the transiton
+        self.performSegueWithIdentifier("abulmtomain", sender: self)
+        
         // Clear Video Player
         videoPlayer.sharedInstance.clear()
+        videoPlayer.sharedInstance.removeFromParentViewController()
+        videoPlayer.sharedInstance.view.removeFromSuperview()
         if((videoObserver) != nil){
             NSNotificationCenter.defaultCenter().removeObserver(videoObserver)
         }
@@ -373,29 +379,28 @@ class AbulmViewController: UIViewController,UITableViewDelegate,UITableViewDataS
         clearVideoButton.hidden = false
         
         let name:String = currentDic.allKeysForObject(objectToBePlayed).first as! String
-        videoPlayer.sharedInstance.playVideo(Variables.sharedInstance.allAmblumVideos[name] as! NSArray)
-        videoPlayer.sharedInstance.view.removeFromSuperview()
-        videoPlayer.sharedInstance.view.hidden = false
+
         self.addChildViewController(videoPlayer.sharedInstance)
         self.view.addSubview(videoPlayer.sharedInstance.view)
+        videoPlayer.sharedInstance.view.hidden = false
+        videoPlayer.sharedInstance.view.frame = videoPlayerView.frame
+
+        videoPlayer.sharedInstance.playVideo(Variables.sharedInstance.allAmblumVideos[name] as! NSArray)
         videoPlayer.sharedInstance.addObserver(self, forKeyPath: "videoBounds", options: NSKeyValueObservingOptions.New, context: nil)
-        videoPlayer.sharedInstance.player?.play()
         
         let notificationCenter = NSNotificationCenter.defaultCenter()
         let mainQueue = NSOperationQueue.mainQueue()
         
         videoObserver = notificationCenter.addObserverForName(AVPlayerItemDidPlayToEndTimeNotification, object: nil, queue: mainQueue) { _ in
             
-            videoPlayer.sharedInstance.player?.replaceCurrentItemWithPlayerItem(nil)
-            videoPlayer.sharedInstance.removeObserver(self, forKeyPath: "videoBounds")
-            videoPlayer.sharedInstance.view.removeFromSuperview()
-            videoPlayer.sharedInstance.path = nil
+            videoPlayer.sharedInstance.clear()
             self.clearVideoButton.hidden = true
         }
     }
     
     @IBAction func clearVideo(sender: AnyObject) {
         videoPlayer.sharedInstance.clear()
+        videoPlayerView.hidden = true
         clearVideoButton.hidden = true
     }
     
@@ -442,54 +447,4 @@ class AbulmViewController: UIViewController,UITableViewDelegate,UITableViewDataS
             }
         }
     }
-
-    
-//    override func supportedInterfaceOrientations() -> UIInterfaceOrientationMask {
-//        if(isFullScreen){
-//            if(UIDevice.currentDevice().orientation.isLandscape){
-//                return UIInterfaceOrientationMask.Landscape
-//            }else{
-//                return UIInterfaceOrientationMask.Portrait
-//            }
-//            
-//        }else{
-//            return UIInterfaceOrientationMask.Portrait
-//        }
-//    }
-//    
-//    func rotateScreenBackToPortrait(){
-//        
-//        videoPlayer.sharedInstance.view.removeFromSuperview()
-//        videoPlayer.sharedInstance.view.frame = videoPlayerView.frame
-//        self.view.addSubview(videoPlayer.sharedInstance.view)
-//    }
-//    
-//    func updateFullScreenState(){
-//        
-//        var fullScreenView:Bool = false
-//        if(videoPlayer.sharedInstance.videoBounds.width == self.view.frame.width){
-//            fullScreenView = true
-//        }else if(videoPlayer.sharedInstance.videoBounds.width == self.view.frame.height){
-//            fullScreenView = true
-//        }else if(videoPlayer.sharedInstance.videoBounds.height == self.view.frame.width){
-//            fullScreenView = true
-//        }else if(videoPlayer.sharedInstance.videoBounds.height == self.view.frame.height){
-//            fullScreenView = true
-//        }
-//        
-//        
-//        if(videoPlayer.sharedInstance.view != nil && fullScreenView ){
-//            isFullScreen = true
-//            
-//        }else{
-//            if(isFullScreen && UIDevice.currentDevice().orientation.isLandscape){
-//                isFullScreen = false
-//                UIDevice.currentDevice().setValue(UIInterfaceOrientation.Portrait.rawValue, forKey: "orientation")
-//                _ = NSTimer.scheduledTimerWithTimeInterval(0.5, target: self, selector: Selector("rotateScreenBackToPortrait"), userInfo: nil, repeats: false)
-//            }else if(isFullScreen && UIDevice.currentDevice().orientation.isPortrait){
-//                isFullScreen = false
-//                rotateScreenBackToPortrait()
-//            }
-//        }
-//    }
 }

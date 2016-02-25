@@ -39,6 +39,8 @@ class videoPlayer: AVPlayerViewController {
     let Multiple_Rotate:NSInteger = 1
     var currentState:NSInteger = 2
     
+    var frameSize:CGRect?
+    
     func setVideoData(videoData:NSArray, frame:CGRect){
         self.videoData = videoData
         self.populatLocalVideos()

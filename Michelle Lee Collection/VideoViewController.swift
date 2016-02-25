@@ -363,8 +363,9 @@ class VideoViewController: UIViewController,UICollectionViewDelegateFlowLayout, 
         self.performSegueWithIdentifier("videoToMain", sender: self)
         
         // Clear audio player
-        videoPlayer.sharedInstance.view.hidden = true
         videoPlayer.sharedInstance.clear()
+        videoPlayer.sharedInstance.removeFromParentViewController()
+        videoPlayer.sharedInstance.view.removeFromSuperview()
         
         // Clear data
         multiCurrentName = " "

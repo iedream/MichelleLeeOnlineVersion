@@ -276,6 +276,7 @@ class EditPageViewController:UIViewController,UITableViewDelegate,UITableViewDat
             Variables.sharedInstance.populatePlayListFromPlist("OriginalPlayist.plist")
             sourceMethods.sharedInstance.populateLocalMusic()
             sourceMethods.sharedInstance.populateLocalVideo()
+            sourceMethods.sharedInstance.populateMusicVideo()
             
             // Set Up views
             self.spinnerView.stopAnimating()

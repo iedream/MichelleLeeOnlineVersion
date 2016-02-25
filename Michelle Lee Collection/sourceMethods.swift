@@ -108,6 +108,10 @@ class sourceMethods:UIViewController,AVAudioPlayerDelegate {
         }
     }
     
+    func populateMusicVideo() {
+        runSearch(Variables.sharedInstance.allAmblumVideos, title: "", type: MPMediaType.AnyVideo, query: mainQuery)
+    }
+    
     // Check for Local Video Source
     func populateLocalVideo(){
         for (name,subdic) in Variables.sharedInstance.allVideoPlayist{
