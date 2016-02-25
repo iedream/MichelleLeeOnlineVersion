@@ -21,6 +21,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
         // Populate Playist from Plist
         Variables.sharedInstance.populatePlayListFromPlist("ModifiedPlayist.plist")
+        videoPlayer.sharedInstance.view.hidden = true
         
         // Set Up Check For Connection
         self.internetReach = Reachability.reachabilityForInternetConnection()
@@ -50,6 +51,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         }else if(currentNetWork.rawValue == ReachableViaWWAN.rawValue){
             sourceMethods.sharedInstance.setCurrentConnectState(ConnectionState.WWAN);
         }
+        
     }
 
     func application(application: UIApplication, supportedInterfaceOrientationsForWindow window: UIWindow?) -> UIInterfaceOrientationMask {

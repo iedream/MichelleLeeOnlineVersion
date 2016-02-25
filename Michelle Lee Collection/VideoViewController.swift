@@ -59,6 +59,8 @@ class VideoViewController: UIViewController,UICollectionViewDelegateFlowLayout, 
     
     override func viewDidLoad() {
         
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: "refreshData", name: "connectionStateChange", object: nil)
+        
         super.viewDidLoad()
         // Set Up Background Image
         backGroundImage.image = UIImage(named: imageName)
@@ -361,6 +363,7 @@ class VideoViewController: UIViewController,UICollectionViewDelegateFlowLayout, 
         self.performSegueWithIdentifier("videoToMain", sender: self)
         
         // Clear audio player
+        videoPlayer.sharedInstance.view.hidden = true
         videoPlayer.sharedInstance.clear()
         
         // Clear data
@@ -435,6 +438,10 @@ class VideoViewController: UIViewController,UICollectionViewDelegateFlowLayout, 
         sender.resignFirstResponder()
     }
     
+    func refreshData() {
+        videoCollectionView.reloadData()
+    }
+    
     func restrictRotation(restriction:Bool){
         let appDelegate:AppDelegate = UIApplication.sharedApplication().delegate as! AppDelegate
         appDelegate.restrictRotation = restriction
@@ -443,7 +450,7 @@ class VideoViewController: UIViewController,UICollectionViewDelegateFlowLayout, 
     override func observeValueForKeyPath(keyPath: String?, ofObject object: AnyObject?, change: [String : AnyObject]?, context: UnsafeMutablePointer<Void>) {
         
         if(keyPath == "videoBounds"){
-            if(videoPlayer.sharedInstance.videoBounds.width >= videoPlayerView.frame.width ){
+            if(videoPlayer.sharedInstance.videoBounds.width >= UIScreen.mainScreen().fixedCoordinateSpace.bounds.width){
                 self.restrictRotation(false)
             }else if( !(videoPlayer.sharedInstance.videoBounds.width == 0 && videoPlayer.sharedInstance.videoBounds.origin.x < 0)){
                 self.restrictRotation(true)

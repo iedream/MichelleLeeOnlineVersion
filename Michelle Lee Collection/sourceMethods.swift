@@ -36,6 +36,11 @@ class sourceMethods:UIViewController,AVAudioPlayerDelegate {
     
     // Setters For Current State
     func setCurrentConnectState(state:ConnectionState){
+        if(state == ConnectionState.NONE && (currentConnectionState == ConnectionState.WIFI || currentConnectionState == ConnectionState.WWAN)){
+            NSNotificationCenter.defaultCenter().postNotificationName("connectionStateChange", object: nil)
+        }else if((state == ConnectionState.WIFI || state == ConnectionState.WWAN) && currentConnectionState == ConnectionState.NONE){
+            NSNotificationCenter.defaultCenter().postNotificationName("connectionStateChange", object: nil)
+        }
         currentConnectionState = state
     }
     

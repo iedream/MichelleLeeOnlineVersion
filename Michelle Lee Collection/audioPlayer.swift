@@ -462,6 +462,7 @@ class audioPlayer:UIViewController,AVAudioPlayerDelegate,NSURLConnectionDelegate
             //Handle the error
             let alert:UIAlertView = UIAlertView(title: "Stream Audio Failed", message: "The Audio cannot be loaded.", delegate: self, cancelButtonTitle: "OK")
             alert.show()
+            return
         }
 
         self.setUpUIForPlayer(pathName)

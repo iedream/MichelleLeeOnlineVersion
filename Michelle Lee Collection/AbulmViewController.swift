@@ -67,6 +67,7 @@ class AbulmViewController: UIViewController,UITableViewDelegate,UITableViewDataS
             
         }
         UIApplication.sharedApplication().beginReceivingRemoteControlEvents()
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: "refreshData", name: "connectionStateChange", object: nil)
         
         super.viewDidLoad()
         
@@ -420,6 +421,10 @@ class AbulmViewController: UIViewController,UITableViewDelegate,UITableViewDataS
         sender.resignFirstResponder()
     }
     
+    func refreshData() {
+        audioTableView.reloadData()
+    }
+    
     func restrictRotation(restriction:Bool){
         let appDelegate:AppDelegate = UIApplication.sharedApplication().delegate as! AppDelegate
         appDelegate.restrictRotation = restriction
@@ -428,7 +433,7 @@ class AbulmViewController: UIViewController,UITableViewDelegate,UITableViewDataS
     override func observeValueForKeyPath(keyPath: String?, ofObject object: AnyObject?, change: [String : AnyObject]?, context: UnsafeMutablePointer<Void>) {
         
         if(keyPath == "videoBounds"){
-            if(videoPlayer.sharedInstance.videoBounds.width >= audioTableView.frame.width ){
+            if(videoPlayer.sharedInstance.videoBounds.width >= UIScreen.mainScreen().fixedCoordinateSpace.bounds.width ){
                 self.restrictRotation(false)
             }else if( !(videoPlayer.sharedInstance.videoBounds.width == 0 && videoPlayer.sharedInstance.videoBounds.origin.x < 0)){
                 self.restrictRotation(true)
