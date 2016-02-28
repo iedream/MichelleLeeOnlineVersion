@@ -9,6 +9,7 @@
 import Foundation
 import AVFoundation
 import UIKit
+import CoreData
 
 enum FileType: Int {
     case LOCAL
@@ -43,11 +44,11 @@ class VideoViewController: UIViewController,UICollectionViewDelegateFlowLayout, 
     
     // Single Section Main Data
     var mainDicSingle:NSMutableDictionary = NSMutableDictionary()
-    var imageDicSingle:[String:CGImage] = [String:CGImage]()
+    var imageDicSingle:[String:UIImage] = [String:UIImage]()
     
     // Multi Section Main Data
     var mainDicMulti:NSMutableDictionary = NSMutableDictionary()
-    var imageDicMulti:[String:[String:CGImage]] = [String:[String:CGImage]]()
+    var imageDicMulti:[String:[String:UIImage]] = [String:[String:UIImage]]()
     
     // Current Data
     var multiCurrentName:String = " "
@@ -57,11 +58,32 @@ class VideoViewController: UIViewController,UICollectionViewDelegateFlowLayout, 
     let Single_Rotate:NSInteger = 0
     let Multiple_Rotate:NSInteger = 1
     
+    //var loadImageDone:Bool = true
+    let queue:NSOperationQueue = NSOperationQueue.init()
+     let alert:UIAlertController = UIAlertController.init(title: "Network Glitch", message: "An problem occured to load images of videos. Please choose to continue to cancel.", preferredStyle: UIAlertControllerStyle.Alert)
+    
     override func viewDidLoad() {
         
         NSNotificationCenter.defaultCenter().addObserver(self, selector: "refreshData", name: "connectionStateChange", object: nil)
         
+        queue.maxConcurrentOperationCount = 1
+        if(mainDicSingle.count > 0){
+            self.generateOnlineImage()
+        }
+        
+        let addAction:UIAlertAction = UIAlertAction.init(title: "Continue", style: UIAlertActionStyle.Default, handler: {(action) in
+            
+        })
+        let cancelAction:UIAlertAction = UIAlertAction.init(title: "Cancel", style: UIAlertActionStyle.Cancel, handler:{(action) in
+            self.queue.cancelAllOperations()
+        })
+        alert.addAction(addAction)
+        alert.addAction(cancelAction)
+        
+
+        
         super.viewDidLoad()
+        
         // Set Up Background Image
         backGroundImage.image = UIImage(named: imageName)
         
@@ -101,42 +123,122 @@ class VideoViewController: UIViewController,UICollectionViewDelegateFlowLayout, 
     func getImage(){
         if(mainDicSingle.count > 0){
             for (key,value) in mainDicSingle{
-                if(value[0].isEqualToString("local")){
+                if(value.objectAtIndex(0) as! String == "local"){
                     let url = NSURL(string: value.objectAtIndex(1) as! String)
-                    self.captureFrame(url!, timeInSeconds: 12, key: key as! String, sectionKey: "")
-
+                    self.captureFrame(url!, timeInSeconds: 20, key: key as! String, sectionKey: "")
                 }
             }
-        }else if(mainDicMulti.count > 0){
-            for(title,value) in mainDicMulti{
-                for(name,path) in value as! NSDictionary{
-                    if((path as! NSArray).objectAtIndex(0).isEqualToString("local") == true){
-                        let url = NSURL(string: path.objectAtIndex(1) as! String)
-                        self.captureFrame(url!, timeInSeconds: 12, key: name as! String, sectionKey: title as! String)
-                    }
+        }else if(mainDicMulti.count > 0 && multiCurrentName != " "){
+            for(name,path) in mainDicMulti[multiCurrentName] as! NSDictionary{
+                if(path.objectAtIndex(0) as! String == "local"){
+                    let url = NSURL(string: path.objectAtIndex(1) as! String)
+                    self.captureFrame(url!, timeInSeconds: 20, key: name as! String, sectionKey: multiCurrentName)
                 }
             }
         }
     }
     
-    // Acutally getting the image
-    func captureFrame(url:NSURL, timeInSeconds time:Int64, key:String, sectionKey:String) {
-        let generator = AVAssetImageGenerator(asset: AVAsset(URL: url))
-        let tVal = NSValue(CMTime: CMTimeMake(time, 1))
-        generator.generateCGImagesAsynchronouslyForTimes([tVal], completionHandler: {(_, im:CGImage?, _, _, e:NSError?) in self.finshedCapture(im, key: key, error: e, sectionKey: sectionKey)})
+    func generateOnlineImage(){
+        if(mainDicSingle.count > 0){
+            for (key,value) in mainDicSingle{
+                
+                var imageExist:Bool = false
+                if(imageDicSingle.count > 0){
+                    if( imageDicSingle[key as! String] != nil){
+                        imageExist = true
+                    }
+                }
+                
+                if(value.objectAtIndex(0) as! String == "url" && !imageExist){
+                    
+                    queue.addOperationWithBlock({
+                        let url = NSURL(string: value.objectAtIndex(1) as! String)
+                        let imageGenerator = AVAssetImageGenerator(asset: AVAsset(URL: url!))
+                        imageGenerator.appliesPreferredTrackTransform = true
+                        imageGenerator.requestedTimeToleranceAfter = kCMTimeZero
+                        imageGenerator.requestedTimeToleranceBefore = kCMTimeZero
+                        let time:CMTime = CMTimeMake(60, 600)
+                        
+                        do{
+                            let imageRef:CGImageRef = try imageGenerator.copyCGImageAtTime(time, actualTime: nil)
+                            let image:UIImage = UIImage.init(CGImage: imageRef)
+                            self.imageDicSingle[key as! String] = image
+                        }catch{
+                            if(self.presentedViewController == nil){
+                                self.presentViewController(self.alert, animated: true, completion: nil)
+                            }
+                        }
+                        NSOperationQueue.mainQueue().addOperationWithBlock({
+                            self.videoCollectionView.reloadData()
+                        })
+                    })
+                    
+                }
+            }
+        }else if(mainDicMulti.count > 0 && multiCurrentName != " "){
+            for(name,path) in mainDicMulti[multiCurrentName] as! NSDictionary{
+                
+                var imageExist:Bool = false
+                if(imageDicMulti[multiCurrentName]?.count > 0){
+                    let actDic:[String:UIImage] = imageDicMulti[multiCurrentName]!
+                    if( actDic[name as! String] != nil){
+                        imageExist = true
+                    }
+                }
+                
+                if(path.objectAtIndex(0) as! String == "url" && !imageExist && sourceMethods.sharedInstance.ConnectionAvailable()){
+                
+                    queue.addOperationWithBlock({
+                        let url = NSURL(string: path.objectAtIndex(1) as! String)
+                        let imageGenerator = AVAssetImageGenerator(asset: AVAsset(URL: url!))
+                        imageGenerator.appliesPreferredTrackTransform = true
+                        imageGenerator.requestedTimeToleranceAfter = kCMTimeZero
+                        imageGenerator.requestedTimeToleranceBefore = kCMTimeZero
+                        let time:CMTime = CMTimeMake(60, 600)
+                        
+                        do{
+                            let imageRef:CGImageRef = try imageGenerator.copyCGImageAtTime(time, actualTime: nil)
+                            let image:UIImage = UIImage.init(CGImage: imageRef)
+                            var dict:[String:UIImage] = [String:UIImage]()
+                            if(self.imageDicMulti.count > 0 && self.imageDicMulti[self.multiCurrentName] != nil){
+                                dict = self.imageDicMulti[self.multiCurrentName]!
+                            }
+                            dict[name as! String] = image
+                            self.imageDicMulti[self.multiCurrentName] = dict
+                        }catch{
+                            if(self.presentedViewController == nil){
+                                self.presentViewController(self.alert, animated: true, completion: nil)
+                            }
+                        }
+                        NSOperationQueue.mainQueue().addOperationWithBlock({
+                            self.videoCollectionView.reloadData()
+                        })
+                    })
+                    
+                }
+            }
+        }
+
     }
     
+    // Acutally getting the image
+    func captureFrame(url:NSURL, timeInSeconds time:Int64, key:String, sectionKey:String) {
+        let imageGenerator = AVAssetImageGenerator(asset: AVAsset(URL: url))
+        let tVal = NSValue(CMTime: CMTimeMake(time, 1))
+        imageGenerator.generateCGImagesAsynchronouslyForTimes([tVal], completionHandler: {(_, im:CGImage?, _, _, e:NSError?) in self.finshedCapture(im, key: key, error: e, sectionKey: sectionKey)})
+    }
+
     // Save image in dictionary
     func finshedCapture(im:CGImage?, key:String, error:NSError?, sectionKey:String)  {
         if let img = im {
             if(mainDicSingle.count > 0){
-                imageDicSingle[key] = img
+                imageDicSingle[key] = UIImage.init(CGImage: img)
             }else if(mainDicMulti.count > 0){
-                var dict:[String:CGImage] = [String:CGImage]()
+                var dict:[String:UIImage] = [String:UIImage]()
                 if(imageDicMulti[sectionKey]?.count > 0){
                     dict = imageDicMulti[sectionKey]!
                 }
-                dict[key] = img
+                dict[key] = UIImage.init(CGImage: img)
                 imageDicMulti[sectionKey] = dict
             }
         }
@@ -188,18 +290,20 @@ class VideoViewController: UIViewController,UICollectionViewDelegateFlowLayout, 
         var image:UIImage = UIImage(named: "loadingImage.png")!
         if(mainDicSingle.count > 0){
             if ((imageDicSingle[name]) != nil){
-                let cgImage:CGImage = imageDicSingle[name]!
-                image = UIImage(CGImage: cgImage)
+               // let cgImage:CGImage = imageDicSingle[name]!
+                //image = UIImage(CGImage: cgImage)
+                image = imageDicSingle[name]!
             }
 
         }else if(imageDicMulti.count > 0 && multiCurrentName != " "){
-            var dict:[String:CGImage] = [String:CGImage]()
+            var dict:[String:UIImage] = [String:UIImage]()
             if (imageDicMulti[multiCurrentName] != nil){
                 dict = imageDicMulti[multiCurrentName]!
             }
             if (dict[name] != nil){
-                let cgImage:CGImage = dict[name]!
-                image = UIImage(CGImage: cgImage)
+//                let cgImage:CGImage = dict[name]!
+//                image = UIImage(CGImage: cgImage)
+                image = dict[name]!
             }
         }
         
@@ -217,9 +321,11 @@ class VideoViewController: UIViewController,UICollectionViewDelegateFlowLayout, 
         if(mainDicMulti.count > 0 && multiCurrentName == " "){
             // Reload collection view data to individual sections
             let name:String = mainDicMulti.allKeys[indexPath.row] as! String
-
+            
             multiCurrentName = name
+            self.getImage()
             videoCollectionView.reloadData()
+            self.generateOnlineImage()
             backButton.hidden = false
         }else{
             // Set up video player for playing
@@ -358,6 +464,7 @@ class VideoViewController: UIViewController,UICollectionViewDelegateFlowLayout, 
     @IBAction func goHome(sender: AnyObject) {
         
         timer.invalidate()
+        queue.cancelAllOperations()
         
         // Do the transiton
         self.performSegueWithIdentifier("videoToMain", sender: self)
@@ -382,6 +489,7 @@ class VideoViewController: UIViewController,UICollectionViewDelegateFlowLayout, 
     }
     
     @IBAction func backToHomeMenu(sender: AnyObject) {
+        queue.cancelAllOperations()
         noResult.hidden = true
         backButton.hidden = true
         multiCurrentName = " "
@@ -460,4 +568,5 @@ class VideoViewController: UIViewController,UICollectionViewDelegateFlowLayout, 
             }
         }
     }
+    
 }

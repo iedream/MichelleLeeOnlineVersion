@@ -41,6 +41,10 @@ class videoPlayer: AVPlayerViewController {
     
     var frameSize:CGRect?
     
+    override func viewDidLoad() {
+         NSNotificationCenter.defaultCenter().addObserver(self, selector: "applicationDidEnterBackground:", name: UIApplicationDidEnterBackgroundNotification, object: nil)
+    }
+    
     func setVideoData(videoData:NSArray, frame:CGRect){
         self.videoData = videoData
         self.populatLocalVideos()
@@ -79,6 +83,12 @@ class videoPlayer: AVPlayerViewController {
         }
         let notificationCenter = NSNotificationCenter.defaultCenter()
         let mainQueue = NSOperationQueue.mainQueue()
+        
+        notificationCenter.addObserverForName(AVPlayerItemFailedToPlayToEndTimeErrorKey, object: nil, queue: mainQueue, usingBlock: {_ in 
+            NSLog("error")
+        })
+        
+        
         videoObserver = notificationCenter.addObserverForName(AVPlayerItemDidPlayToEndTimeNotification, object: nil, queue: mainQueue) { _ in
             
             var newRow:NSInteger = self.videoData.indexOfObject(self.currentPathName) + 1
@@ -152,4 +162,46 @@ class videoPlayer: AVPlayerViewController {
         self.view.hidden = true
         player?.replaceCurrentItemWithPlayerItem(nil)
     }
+    
+    func applicationDidEnterBackground(notification:NSNotification){
+        self.performSelector("playInBackground", withObject: nil, afterDelay: 0.01)
+    }
+    
+    func playInBackground(){
+        self.player?.play()
+    }
+    
+    override func viewDidAppear(animated: Bool) {
+        super.viewDidAppear(animated)
+        UIApplication.sharedApplication().beginReceivingRemoteControlEvents()
+        self.becomeFirstResponder()
+    }
+    
+    override func viewWillDisappear(animated: Bool) {
+        self.player?.pause()
+        super.viewDidDisappear(animated)
+        UIApplication.sharedApplication().endReceivingRemoteControlEvents()
+        self.resignFirstResponder()
+    }
+    
+    override func remoteControlReceivedWithEvent(event: UIEvent?) {
+        switch (event!.subtype){
+        case UIEventSubtype.RemoteControlTogglePlayPause:
+            if(self.player?.rate == 0){
+                player?.play()
+            }else{
+                player?.pause()
+            }
+            break
+        case UIEventSubtype.RemoteControlPlay:
+            player?.play()
+            break
+        case UIEventSubtype.RemoteControlPause:
+            player?.pause()
+            break
+        default:
+            break
+        }
+    }
+
 }
