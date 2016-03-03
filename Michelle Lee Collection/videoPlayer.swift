@@ -42,7 +42,6 @@ class videoPlayer: AVPlayerViewController {
     var frameSize:CGRect?
     
     override func viewDidLoad() {
-         NSNotificationCenter.defaultCenter().addObserver(self, selector: "applicationDidEnterBackground:", name: UIApplicationDidEnterBackgroundNotification, object: nil)
     }
     
     func setVideoData(videoData:NSArray, frame:CGRect){
@@ -84,53 +83,109 @@ class videoPlayer: AVPlayerViewController {
         let notificationCenter = NSNotificationCenter.defaultCenter()
         let mainQueue = NSOperationQueue.mainQueue()
         
-        notificationCenter.addObserverForName(AVPlayerItemFailedToPlayToEndTimeErrorKey, object: nil, queue: mainQueue, usingBlock: {_ in 
-            NSLog("error")
-        })
-        
-        
         videoObserver = notificationCenter.addObserverForName(AVPlayerItemDidPlayToEndTimeNotification, object: nil, queue: mainQueue) { _ in
-            
-            var newRow:NSInteger = self.videoData.indexOfObject(self.currentPathName) + 1
-            if( newRow >= self.videoData.count){
-                newRow = 0
+            self.playNextSong()
+        }
+    }
+    
+    func playNextSong() {
+        var newRow:NSInteger = self.videoData.indexOfObject(self.currentPathName) + 1
+        if( newRow >= self.videoData.count){
+            newRow = 0
+        }
+        
+        if(sourceMethods.sharedInstance.ConnectionAvailable()){
+            if( self.currentState == self.Multiple_Rotate){
+                self.playVideo(self.videoData[newRow] as! NSArray)
+                self.player!.play()
+            }else if(self.currentState == self.Single_Rotate){
+                self.playVideo(self.videoData[self.videoData.indexOfObject(self.currentPathName)] as! NSArray)
+                self.player!.play()
             }
-            
-            if(sourceMethods.sharedInstance.ConnectionAvailable()){
-                if( self.currentState == self.Multiple_Rotate){
-                    self.playVideo(self.videoData[newRow] as! NSArray)
-                    self.player!.play()
-                }else if(self.currentState == self.Single_Rotate){
-                    self.playVideo(self.videoData[self.videoData.indexOfObject(self.currentPathName)] as! NSArray)
-                    self.player!.play()
-                }
-            }else{
-                if(self.currentState == self.Multiple_Rotate){
-                    // Get Index of New Path
-                    var index:NSInteger = NSInteger()
-                    if(self.localVideoArray.count >= 1){
-                        if(self.localVideoArray.containsObject(self.currentPathName)){
-                            index = self.localVideoArray.indexOfObject(self.currentPathName) + 1
-                            if(index >= self.localVideoArray.count){
-                                index = 0
-                            }
-                        }else{
+        }else{
+            if(self.currentState == self.Multiple_Rotate){
+                // Get Index of New Path
+                var index:NSInteger = NSInteger()
+                if(self.localVideoArray.count >= 1){
+                    if(self.localVideoArray.containsObject(self.currentPathName)){
+                        index = self.localVideoArray.indexOfObject(self.currentPathName) + 1
+                        if(index >= self.localVideoArray.count){
                             index = 0
                         }
-                        // Get Next Video Path and give it to the player to set the player up
-                        self.currentPathName = self.localVideoArray.objectAtIndex(index) as! NSArray
-                        self.playVideo(self.currentPathName)
                     }else{
-                        let alert:UIAlertView = UIAlertView(title: "No Local Music", message: "No mp3 in the amblum is in your local Ipod Library", delegate: self, cancelButtonTitle: "OK")
-                        alert.show()
+                        index = 0
                     }
+                    // Get Next Video Path and give it to the player to set the player up
+                    self.currentPathName = self.localVideoArray.objectAtIndex(index) as! NSArray
+                    self.playVideo(self.currentPathName)
+                }else{
+                    let alert:UIAlertView = UIAlertView(title: "No Local Music", message: "No mp3 in the amblum is in your local Ipod Library", delegate: self, cancelButtonTitle: "OK")
+                    alert.show()
                 }
-                else if(self.currentState == self.Single_Rotate){
+            }
+            else if(self.currentState == self.Single_Rotate){
+                if(self.localVideoArray.containsObject(self.currentPathName)) {
+                    self.playVideo(self.videoData[self.videoData.indexOfObject(self.currentPathName)] as! NSArray)
+                    self.player!.play()
+                }else{
                     let alert:UIAlertView = UIAlertView(title: "Cannot Play Video", message: "The video you are playing requires internet connection.", delegate: self, cancelButtonTitle: "OK")
                     alert.show()
                 }
             }
         }
+
+    }
+    
+    func playPrevSong() {
+        var newRow:NSInteger = self.videoData.indexOfObject(self.currentPathName) - 1
+        if( newRow < 0){
+            newRow = self.videoData.count-1
+        }
+        
+        if(sourceMethods.sharedInstance.ConnectionAvailable()){
+            if( self.currentState == self.Multiple_Rotate){
+                self.playVideo(self.videoData[newRow] as! NSArray)
+                self.player!.play()
+            }else if(self.currentState == self.Single_Rotate){
+                self.playVideo(self.videoData[self.videoData.indexOfObject(self.currentPathName)] as! NSArray)
+                self.player!.play()
+            }
+        }else{
+            if(self.currentState == self.Multiple_Rotate){
+                // Get Index of New Path
+                var index:NSInteger = NSInteger()
+                if(self.localVideoArray.count >= 1){
+                    if(self.localVideoArray.containsObject(self.currentPathName)){
+                        index = self.localVideoArray.indexOfObject(self.currentPathName) - 1
+                        if(index < 0){
+                            index = self.localVideoArray.count-1
+                        }
+                    }else{
+                        index = 0
+                    }
+                    // Get Next Video Path and give it to the player to set the player up
+                    self.currentPathName = self.localVideoArray.objectAtIndex(index) as! NSArray
+                    self.playVideo(self.currentPathName)
+                }else{
+                    let alert:UIAlertView = UIAlertView(title: "No Local Music", message: "No mp3 in the amblum is in your local Ipod Library", delegate: self, cancelButtonTitle: "OK")
+                    alert.show()
+                }
+            }else if(self.currentState == self.Single_Rotate){
+                if(self.localVideoArray.containsObject(self.currentPathName)) {
+                    self.playVideo(self.videoData[self.videoData.indexOfObject(self.currentPathName)] as! NSArray)
+                    self.player!.play()
+                }else{
+                    if(self.localVideoArray.containsObject(self.currentPathName)) {
+                        self.playVideo(self.videoData[self.videoData.indexOfObject(self.currentPathName)] as! NSArray)
+                        self.player!.play()
+                    }else{
+                        let alert:UIAlertView = UIAlertView(title: "Cannot Play Video", message: "The video you are playing requires internet connection.", delegate: self, cancelButtonTitle: "OK")
+                        alert.show()
+                    }
+                }
+            }
+        }
+
     }
     
     func populatLocalVideos(){
@@ -155,53 +210,12 @@ class videoPlayer: AVPlayerViewController {
         }
         path = nil
         
-        if(!self.view.hidden){
+            if(!self.view.hidden){
             self.removeObserver((self.view.superview?.nextResponder())!, forKeyPath: "videoBounds")
         }
         
         self.view.hidden = true
         player?.replaceCurrentItemWithPlayerItem(nil)
-    }
-    
-    func applicationDidEnterBackground(notification:NSNotification){
-        self.performSelector("playInBackground", withObject: nil, afterDelay: 0.01)
-    }
-    
-    func playInBackground(){
-        self.player?.play()
-    }
-    
-    override func viewDidAppear(animated: Bool) {
-        super.viewDidAppear(animated)
-        UIApplication.sharedApplication().beginReceivingRemoteControlEvents()
-        self.becomeFirstResponder()
-    }
-    
-    override func viewWillDisappear(animated: Bool) {
-        self.player?.pause()
-        super.viewDidDisappear(animated)
-        UIApplication.sharedApplication().endReceivingRemoteControlEvents()
-        self.resignFirstResponder()
-    }
-    
-    override func remoteControlReceivedWithEvent(event: UIEvent?) {
-        switch (event!.subtype){
-        case UIEventSubtype.RemoteControlTogglePlayPause:
-            if(self.player?.rate == 0){
-                player?.play()
-            }else{
-                player?.pause()
-            }
-            break
-        case UIEventSubtype.RemoteControlPlay:
-            player?.play()
-            break
-        case UIEventSubtype.RemoteControlPause:
-            player?.pause()
-            break
-        default:
-            break
-        }
     }
 
 }

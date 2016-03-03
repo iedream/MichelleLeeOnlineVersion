@@ -47,6 +47,7 @@ class Variables:UIViewController{
         if(list == "OriginalPlayist.plist"){
             sourceMethods.sharedInstance.populateLocalMusic()
             sourceMethods.sharedInstance.populateLocalVideo()
+            sourceMethods.sharedInstance.populateMusicVideo()
             writeToModifyPlist()
         }
     }

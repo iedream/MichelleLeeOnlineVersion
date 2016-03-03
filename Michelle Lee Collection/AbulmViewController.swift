@@ -9,6 +9,7 @@
 import Foundation
 import UIKit
 import AVFoundation
+import MediaPlayer
 
 class AbulmViewController: UIViewController,UITableViewDelegate,UITableViewDataSource,UIPickerViewDataSource,UIPickerViewDelegate {
     
@@ -52,24 +53,19 @@ class AbulmViewController: UIViewController,UITableViewDelegate,UITableViewDataS
     var isFullScreen:Bool = false
     var timer:NSTimer = NSTimer()
     @IBOutlet var noResult: UILabel!
-    //let videoDic:[String:String] = ["你看到的我是蓝色的":"video121","可能":"video120","沉淀":"video122","习惯":"video123"]
     var videoObserver:NSObjectProtocol! = nil
     
     // Screen SetUp Property
     @IBOutlet var background: UIImageView!
     
-    
+    let commandCenter:MPRemoteCommandCenter = MPRemoteCommandCenter.sharedCommandCenter()
     override func viewDidLoad() {
-        do{
-            try AVAudioSession.sharedInstance().setCategory(AVAudioSessionCategoryPlayback)
-            try AVAudioSession.sharedInstance().setActive(true)
-        }catch{
-            
-        }
-        UIApplication.sharedApplication().beginReceivingRemoteControlEvents()
+        super.viewDidLoad()
+        
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: "applicationDidEnterBackground:", name: UIApplicationDidEnterBackgroundNotification, object: nil)
+
         NSNotificationCenter.defaultCenter().addObserver(self, selector: "refreshData", name: "connectionStateChange", object: nil)
         
-        super.viewDidLoad()
         
         tableTitleArray = NSMutableArray.init(array: Variables.sharedInstance.allAmblum.allKeys)
         
@@ -107,9 +103,22 @@ class AbulmViewController: UIViewController,UITableViewDelegate,UITableViewDataS
         self.buttonActiveandInactive(activeButton, inactiveButtons:inactiveButton)
         audioPlayer.sharedInstance.setAudioAtBeginning(slider, actCurrentLabel: currentTimeLabel, actEndLabel: endTimeLabel, actSpinner: progressBar, actBlurEffect: blurView)
     }
+    
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
+    }
+    
+    override func viewDidAppear(animated: Bool) {
+        super.viewDidAppear(animated)
+        UIApplication.sharedApplication().beginReceivingRemoteControlEvents()
+        self.becomeFirstResponder()
+    }
+    
+    override func viewDidDisappear(animated: Bool) {
+        super.viewDidDisappear(animated)
+        UIApplication.sharedApplication().endReceivingRemoteControlEvents()
+        self.resignFirstResponder()
     }
     
     // MARK: -Populate Table Methods -
@@ -238,6 +247,12 @@ class AbulmViewController: UIViewController,UITableViewDelegate,UITableViewDataS
     @IBAction func goHome(sender: UIButton) {
         
         timer.invalidate()
+        commandCenter.playCommand.removeTarget(self)
+        commandCenter.pauseCommand.removeTarget(self)
+        commandCenter.nextTrackCommand.removeTarget(self)
+        commandCenter.previousTrackCommand.removeTarget(self)
+        UIApplication.sharedApplication().endReceivingRemoteControlEvents()
+        self.resignFirstResponder()
         
         // Do the transiton
         self.performSegueWithIdentifier("abulmtomain", sender: self)
@@ -271,6 +286,38 @@ class AbulmViewController: UIViewController,UITableViewDelegate,UITableViewDataS
     }
     
     // MARK: - Audio Player Button Method -
+    
+    func playPrev() {
+        if(!videoPlayer.sharedInstance.view.hidden){
+            self.clearVideo(clearVideoButton)
+            audioPlayer.sharedInstance.setAutoMode()
+        }
+        audioPlayer.sharedInstance.getPrevSong()
+    }
+    
+    func playNext() {
+        if(!videoPlayer.sharedInstance.view.hidden){
+            self.clearVideo(clearVideoButton)
+            audioPlayer.sharedInstance.setAutoMode()
+        }
+        audioPlayer.sharedInstance.getNextSong()
+    }
+    
+    func playRemote() {
+        if(!videoPlayer.sharedInstance.view.hidden){
+            videoPlayer.sharedInstance.player?.play()
+        }else{
+            self.playAudio(playButton)
+        }
+    }
+    
+    func pauseRemote() {
+        if(!videoPlayer.sharedInstance.view.hidden){
+            videoPlayer.sharedInstance.player?.pause()
+        }else{
+            self.pauseAudio(playButton)
+        }
+    }
     
     // call play audio method in audio player class
     @IBAction func playAudio(sender: AnyObject) {
@@ -394,7 +441,6 @@ class AbulmViewController: UIViewController,UITableViewDelegate,UITableViewDataS
         videoObserver = notificationCenter.addObserverForName(AVPlayerItemDidPlayToEndTimeNotification, object: nil, queue: mainQueue) { _ in
             
             videoPlayer.sharedInstance.clear()
-            self.clearVideoButton.hidden = true
         }
     }
     
@@ -402,6 +448,9 @@ class AbulmViewController: UIViewController,UITableViewDelegate,UITableViewDataS
         videoPlayer.sharedInstance.clear()
         videoPlayerView.hidden = true
         clearVideoButton.hidden = true
+        if((videoObserver) != nil){
+            NSNotificationCenter.defaultCenter().removeObserver(videoObserver)
+        }
     }
     
     
@@ -447,4 +496,44 @@ class AbulmViewController: UIViewController,UITableViewDelegate,UITableViewDataS
             }
         }
     }
+    
+    func applicationDidEnterBackground(notification:NSNotification){
+        do{
+            try AVAudioSession.sharedInstance().setCategory(AVAudioSessionCategoryPlayback)
+        }catch{
+            NSLog("can't play in background")
+        }
+    }
+    
+    override func canBecomeFirstResponder() -> Bool {
+        return true
+    }
+    
+    override func remoteControlReceivedWithEvent(event: UIEvent?) {
+        switch (event!.subtype){
+        case UIEventSubtype.RemoteControlTogglePlayPause:
+            if(audioPlayer.sharedInstance.player.rate == 0){
+                self.playRemote()
+            }else{
+                self.pauseRemote()
+            }
+            break
+        case UIEventSubtype.RemoteControlPlay:
+            self.playRemote()
+            break
+        case UIEventSubtype.RemoteControlPause:
+            self.pauseRemote()
+            break
+        case UIEventSubtype.RemoteControlPreviousTrack:
+            self.playPrev()
+            break
+        case UIEventSubtype.RemoteControlNextTrack:
+            self.playNext()
+            break
+        default:
+            break
+        }
+    }
+
+
 }

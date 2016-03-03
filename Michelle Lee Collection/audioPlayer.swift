@@ -60,11 +60,20 @@ class audioPlayer:UIViewController,AVAudioPlayerDelegate,NSURLConnectionDelegate
     var responseData:NSMutableData!
     var downloadSize:Float!
     
+    let commandCenter:MPRemoteCommandCenter = MPRemoteCommandCenter.sharedCommandCenter()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
     }
     
     func setUpUIForPlayer(name:String){
+        MPNowPlayingInfoCenter.defaultCenter().nowPlayingInfo = [MPNowPlayingInfoPropertyDefaultPlaybackRate:1.0, MPMediaItemPropertyArtist:"刘惜君", MPMediaItemPropertyTitle:name]
+        commandCenter.playCommand.enabled = true
+        commandCenter.pauseCommand.enabled = true
+        commandCenter.previousTrackCommand.enabled = true
+        commandCenter.nextTrackCommand.enabled = true
+
+        
         // If there is video for it, enable the mv button
         if((videoDic[name]) != nil){
             mvButton.alpha = 1.0
@@ -130,27 +139,7 @@ class audioPlayer:UIViewController,AVAudioPlayerDelegate,NSURLConnectionDelegate
                 progressBar.progress = 0.0
                 connection?.cancel()
                 self.clearResponseData()
-                
-                /*spinner.startAnimating()
-                blurEffect.hidden = false
-                
-                let time = dispatch_time(dispatch_time_t(DISPATCH_TIME_NOW), 1 * Int64(NSEC_PER_SEC))
-                dispatch_after(time, dispatch_get_main_queue()) {
-                    //put your code which should be executed with a delay here
-                    let myURL:NSURL = NSURL(string: self.currentPath[1] as! String)!
-                    let playerItem:NSData = NSData(contentsOfURL: myURL)!
-                    do{
-                        self.player = try AVAudioPlayer(data: playerItem)
-                    }catch{
-                        //Handle the error
-                        let alert:UIAlertView = UIAlertView(title: "URL Connection Fail", message: "The URL for the mp3 is no longer valid", delegate: self, cancelButtonTitle: "OK")
-                        alert.show()
-                        //self.currentPathInvalid()
-                    }
-                    self.spinner.stopAnimating()
-                    self.blurEffect.hidden = true
-                    self.setUpUIForPlayer(name)
-                }*/
+
                 pathName = name
                 let myURL:NSURL = NSURL(string: self.currentPath[1] as! String)!
                 let request:NSURLRequest = NSURLRequest.init(URL: myURL)
@@ -164,7 +153,6 @@ class audioPlayer:UIViewController,AVAudioPlayerDelegate,NSURLConnectionDelegate
                 //Handle the error
                 let alert:UIAlertView = UIAlertView(title: "Cannot found file", message: "Cannot find the mp3 in your local Ipod Library", delegate: self, cancelButtonTitle: "OK")
                 alert.show()
-                //self.currentPathInvalid()
             }
             pathName = name
             self.setUpUIForPlayer(name)
@@ -174,6 +162,7 @@ class audioPlayer:UIViewController,AVAudioPlayerDelegate,NSURLConnectionDelegate
     // Set Up player
     func setUpPlayer(name:String , objectToBePlay:NSArray, actSlider:UISlider, actCurrentLabel:UILabel, actEndLabel:UILabel, videoButton:UIButton,actSpinner:UIProgressView,actblurEffect:UIVisualEffectView){
         // Assign View Property
+        self.pause()
         slider = actSlider
         blurView = actblurEffect
         progressBar = actSpinner
@@ -270,8 +259,10 @@ class audioPlayer:UIViewController,AVAudioPlayerDelegate,NSURLConnectionDelegate
     
     // Pause Audio
     func pause(){
-        player.pause()
-        timer.invalidate()
+        if((player) != nil){
+            player.pause()
+            timer.invalidate()
+        }
     }
     
     func playAtTime(actSlider:UISlider){
@@ -302,7 +293,8 @@ class audioPlayer:UIViewController,AVAudioPlayerDelegate,NSURLConnectionDelegate
         }
     }*/
     
-    private func getNextSong(){
+    func getPrevSong(){
+        self.pause()
         switch(currentMode){
         case AudioPlayerState.Play_Multi:
             
@@ -316,7 +308,7 @@ class audioPlayer:UIViewController,AVAudioPlayerDelegate,NSURLConnectionDelegate
                 if(localMusicArray.count >= 1){
                     if(localMusicArray.containsObject(currentPath)){
                         begIndex = localMusicArray.indexOfObject(currentPath)
-                        index = getIndex(localMusicArray, currentIndex: begIndex)
+                        index = getIndex(localMusicArray, currentIndex: begIndex, type: "prev")
                     }else{
                         index = 0
                     }
@@ -333,7 +325,63 @@ class audioPlayer:UIViewController,AVAudioPlayerDelegate,NSURLConnectionDelegate
                 // Get Current Index
                 let begIndex:NSInteger = mainDataOrder.indexOfObject(currentPath)
                 // Get Index of New Path
-                let index:NSInteger = getIndex(mainDataOrder, currentIndex: begIndex)
+                let index:NSInteger = getIndex(mainDataOrder, currentIndex: begIndex, type: "prev")
+                
+                // Get Next Video Path and give it to the player to set the player up
+                currentPath = mainDataOrder.objectAtIndex(index) as! NSArray
+                self.initializePlayerWithFile(mainData.allKeysForObject(currentPath).first as! String)
+            }
+            
+            break
+        case AudioPlayerState.Play_Single:
+            if(sourceMethods.sharedInstance.ConnectionAvailable()){
+                // Give the current Video Path to the player and set the player up
+                self.initializePlayerWithFile(mainData.allKeysForObject(currentPath).first as! String)
+            }else{
+                let alert:UIAlertView = UIAlertView(title: "Cannot Play Song", message: "The song you are playing requires internet connection.", delegate: self, cancelButtonTitle: "OK")
+                alert.show()
+                self.clearPlayer(slider, actCurrentLabel: currentTimeLable, actEndLabel: endTimeLable)
+            }
+            break
+        default:
+            break
+        }
+
+    }
+    
+    func getNextSong(){
+        self.pause()
+        switch(currentMode){
+        case AudioPlayerState.Play_Multi:
+            
+            if(!sourceMethods.sharedInstance.ConnectionAvailable()){
+                // Get Current Index
+                var begIndex:NSInteger = NSInteger()
+                // Get Index of New Path
+                var index:NSInteger = NSInteger()
+                
+                // Get Current Index
+                if(localMusicArray.count >= 1){
+                    if(localMusicArray.containsObject(currentPath)){
+                        begIndex = localMusicArray.indexOfObject(currentPath)
+                        index = getIndex(localMusicArray, currentIndex: begIndex, type: "next")
+                    }else{
+                        index = 0
+                    }
+                    // Get Next Video Path and give it to the player to set the player up
+                    currentPath = localMusicArray.objectAtIndex(index) as! NSArray
+                    self.initializePlayerWithFile(mainData.allKeysForObject(currentPath).first as! String)
+                }else{
+                    let alert:UIAlertView = UIAlertView(title: "No Local Music", message: "No mp3 in the amblum is in your local Ipod Library", delegate: self, cancelButtonTitle: "OK")
+                    alert.show()
+                    self.clearPlayer(slider, actCurrentLabel: currentTimeLable, actEndLabel: endTimeLable)
+                }
+                
+            }else{
+                // Get Current Index
+                let begIndex:NSInteger = mainDataOrder.indexOfObject(currentPath)
+                // Get Index of New Path
+                let index:NSInteger = getIndex(mainDataOrder, currentIndex: begIndex, type: "next")
 
                 // Get Next Video Path and give it to the player to set the player up
                 currentPath = mainDataOrder.objectAtIndex(index) as! NSArray
@@ -357,11 +405,20 @@ class audioPlayer:UIViewController,AVAudioPlayerDelegate,NSURLConnectionDelegate
 
     }
     
-    func getIndex(data:NSArray,currentIndex:NSInteger) -> NSInteger{
-        if(currentIndex+1 >= data.count){
-            return 0
+    func getIndex(data:NSArray,currentIndex:NSInteger,type:String) -> NSInteger{
+        
+        if(type == "next"){
+            if(currentIndex+1 >= data.count){
+                return 0
+            }else{
+                return currentIndex+1
+            }
         }else{
-            return currentIndex+1
+            if(currentIndex-1 < 0){
+                return data.count - 1
+            }else{
+                return currentIndex-1
+            }
         }
     }
     
@@ -477,6 +534,7 @@ class audioPlayer:UIViewController,AVAudioPlayerDelegate,NSURLConnectionDelegate
         let alert:UIAlertView = UIAlertView(title: "Stream Audio Failed", message: "The Audio cannot be loaded.", delegate: self, cancelButtonTitle: "OK")
         alert.show()
     }
+    
     
     func clearResponseData(){
         if(responseData != nil){

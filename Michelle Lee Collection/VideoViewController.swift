@@ -10,6 +10,7 @@ import Foundation
 import AVFoundation
 import UIKit
 import CoreData
+import MediaPlayer
 
 enum FileType: Int {
     case LOCAL
@@ -63,13 +64,9 @@ class VideoViewController: UIViewController,UICollectionViewDelegateFlowLayout, 
      let alert:UIAlertController = UIAlertController.init(title: "Network Glitch", message: "An problem occured to load images of videos. Please choose to continue to cancel.", preferredStyle: UIAlertControllerStyle.Alert)
     
     override func viewDidLoad() {
-        
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: "applicationDidEnterBackground:", name: UIApplicationDidEnterBackgroundNotification, object: nil)
+
         NSNotificationCenter.defaultCenter().addObserver(self, selector: "refreshData", name: "connectionStateChange", object: nil)
-        
-        queue.maxConcurrentOperationCount = 1
-        if(mainDicSingle.count > 0){
-            self.generateOnlineImage()
-        }
         
         let addAction:UIAlertAction = UIAlertAction.init(title: "Continue", style: UIAlertActionStyle.Default, handler: {(action) in
             
@@ -115,6 +112,16 @@ class VideoViewController: UIViewController,UICollectionViewDelegateFlowLayout, 
         let activeButton:[UIButton] = []
         let inactiveButton:[UIButton] = [multipleRotateButton,singleRotateButton]
         self.buttonActiveandInactive(activeButton, inactiveButtons: inactiveButton)
+        
+        queue.maxConcurrentOperationCount = 1
+    }
+    
+    override func viewDidAppear(animated: Bool) {
+        UIApplication.sharedApplication().beginReceivingRemoteControlEvents()
+        self.becomeFirstResponder()
+        if(mainDicSingle.count > 0){
+            self.generateOnlineImage()
+        }
     }
     
     // MARK: - Get Individual Mp4 Image To Disply -
@@ -149,7 +156,7 @@ class VideoViewController: UIViewController,UICollectionViewDelegateFlowLayout, 
                     }
                 }
                 
-                if(value.objectAtIndex(0) as! String == "url" && !imageExist){
+                if(value.objectAtIndex(0) as! String == "url" && !imageExist && sourceMethods.sharedInstance.ConnectionAvailable()){
                     
                     queue.addOperationWithBlock({
                         let url = NSURL(string: value.objectAtIndex(1) as! String)
@@ -164,9 +171,11 @@ class VideoViewController: UIViewController,UICollectionViewDelegateFlowLayout, 
                             let image:UIImage = UIImage.init(CGImage: imageRef)
                             self.imageDicSingle[key as! String] = image
                         }catch{
-                            if(self.presentedViewController == nil){
-                                self.presentViewController(self.alert, animated: true, completion: nil)
-                            }
+                            NSOperationQueue.mainQueue().addOperationWithBlock({
+                                if(self.presentedViewController == nil){
+                                    self.presentViewController(self.alert, animated: true, completion: nil)
+                                }
+                            })
                         }
                         NSOperationQueue.mainQueue().addOperationWithBlock({
                             self.videoCollectionView.reloadData()
@@ -206,9 +215,11 @@ class VideoViewController: UIViewController,UICollectionViewDelegateFlowLayout, 
                             dict[name as! String] = image
                             self.imageDicMulti[self.multiCurrentName] = dict
                         }catch{
-                            if(self.presentedViewController == nil){
-                                self.presentViewController(self.alert, animated: true, completion: nil)
-                            }
+                            NSOperationQueue.mainQueue().addOperationWithBlock({
+                                if(self.presentedViewController == nil){
+                                    self.presentViewController(self.alert, animated: true, completion: nil)
+                                }
+                            })
                         }
                         NSOperationQueue.mainQueue().addOperationWithBlock({
                             self.videoCollectionView.reloadData()
@@ -290,8 +301,6 @@ class VideoViewController: UIViewController,UICollectionViewDelegateFlowLayout, 
         var image:UIImage = UIImage(named: "loadingImage.png")!
         if(mainDicSingle.count > 0){
             if ((imageDicSingle[name]) != nil){
-               // let cgImage:CGImage = imageDicSingle[name]!
-                //image = UIImage(CGImage: cgImage)
                 image = imageDicSingle[name]!
             }
 
@@ -301,8 +310,6 @@ class VideoViewController: UIViewController,UICollectionViewDelegateFlowLayout, 
                 dict = imageDicMulti[multiCurrentName]!
             }
             if (dict[name] != nil){
-//                let cgImage:CGImage = dict[name]!
-//                image = UIImage(CGImage: cgImage)
                 image = dict[name]!
             }
         }
@@ -562,10 +569,61 @@ class VideoViewController: UIViewController,UICollectionViewDelegateFlowLayout, 
             if(videoPlayer.sharedInstance.videoBounds.width >= UIScreen.mainScreen().fixedCoordinateSpace.bounds.width){
                 self.restrictRotation(false)
             }else if( !(videoPlayer.sharedInstance.videoBounds.width == 0 && videoPlayer.sharedInstance.videoBounds.origin.x < 0)){
+                videoCollectionView.reloadData()
                 self.restrictRotation(true)
                 UIDevice.currentDevice().setValue(UIInterfaceOrientation.Portrait.rawValue, forKey: "orientation")
                 videoPlayer.sharedInstance.view.frame = videoPlayerView.frame
             }
+        }
+    }
+    
+    func applicationDidEnterBackground(notification:NSNotification){
+        do{
+            try AVAudioSession.sharedInstance().setCategory(AVAudioSessionCategoryPlayback)
+        }catch{
+            NSLog("can't play in background")
+        }
+        self.performSelector("playInBackground", withObject: nil, afterDelay: 0.01)
+    }
+    
+    func playInBackground(){
+        videoPlayer.sharedInstance.player?.play()
+    }
+    
+    override func viewDidDisappear(animated: Bool) {
+        videoPlayer.sharedInstance.player?.pause()
+        super.viewDidDisappear(animated)
+        UIApplication.sharedApplication().endReceivingRemoteControlEvents()
+        self.resignFirstResponder()
+    }
+    
+    override func canBecomeFirstResponder() -> Bool {
+        return true
+    }
+    
+    override func remoteControlReceivedWithEvent(event: UIEvent?) {
+        switch (event!.subtype){
+        case UIEventSubtype.RemoteControlTogglePlayPause:
+            if(videoPlayer.sharedInstance.player?.rate == 0){
+                videoPlayer.sharedInstance.player?.play()
+            }else{
+                videoPlayer.sharedInstance.player?.pause()
+            }
+            break
+        case UIEventSubtype.RemoteControlPlay:
+            videoPlayer.sharedInstance.player?.play()
+            break
+        case UIEventSubtype.RemoteControlPause:
+            videoPlayer.sharedInstance.player?.pause()
+            break
+        case UIEventSubtype.RemoteControlPreviousTrack:
+            videoPlayer.sharedInstance.playPrevSong()
+            break
+        case UIEventSubtype.RemoteControlNextTrack:
+            videoPlayer.sharedInstance.playNextSong()
+            break
+        default:
+            break
         }
     }
     
