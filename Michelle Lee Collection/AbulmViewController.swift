@@ -503,6 +503,14 @@ class AbulmViewController: UIViewController,UITableViewDelegate,UITableViewDataS
         }catch{
             NSLog("can't play in background")
         }
+        if(!videoPlayer.sharedInstance.view.hidden){
+            self.performSelector("playInBackground", withObject: nil, afterDelay: 0.01)
+        }
+    }
+    
+    
+    func playInBackground(){
+        videoPlayer.sharedInstance.player?.play()
     }
     
     override func canBecomeFirstResponder() -> Bool {
