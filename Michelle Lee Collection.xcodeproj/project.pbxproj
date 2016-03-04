@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		4F003D821C89339E00DCB032 /* ModifiedPlayist.plist in Resources */ = {isa = PBXBuildFile; fileRef = 4F003D801C89339E00DCB032 /* ModifiedPlayist.plist */; };
+		4F003D831C89339E00DCB032 /* OriginalPlayist.plist in Resources */ = {isa = PBXBuildFile; fileRef = 4F003D811C89339E00DCB032 /* OriginalPlayist.plist */; };
 		4F21086B1B82C46300BC3BAD /* VideoViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F21086A1B82C46300BC3BAD /* VideoViewController.swift */; };
 		4F21086E1B82D2D600BC3BAD /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 4F21086C1B82D2D600BC3BAD /* Main.storyboard */; };
 		4F3DDEFC1B759196006F9245 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F3DDEFB1B759196006F9245 /* AppDelegate.swift */; };
@@ -51,8 +53,6 @@
 		4FEDDD101B7D5A2700C6C663 /* audioPlayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4FEDDD0F1B7D5A2700C6C663 /* audioPlayer.swift */; };
 		4FF29E181C51C307000EFFFC /* sourceMethods.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4FF29E171C51C307000EFFFC /* sourceMethods.swift */; };
 		4FF29E1A1C51D3E5000EFFFC /* Variables.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4FF29E191C51D3E5000EFFFC /* Variables.swift */; };
-		4FFDB87A1C8281B8007E610F /* ModifiedPlayist.plist in Resources */ = {isa = PBXBuildFile; fileRef = 4FFDB8781C8281B8007E610F /* ModifiedPlayist.plist */; };
-		4FFDB87B1C8281B8007E610F /* OriginalPlayist.plist in Resources */ = {isa = PBXBuildFile; fileRef = 4FFDB8791C8281B8007E610F /* OriginalPlayist.plist */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -73,6 +73,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		4F003D801C89339E00DCB032 /* ModifiedPlayist.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = ModifiedPlayist.plist; sourceTree = "<group>"; };
+		4F003D811C89339E00DCB032 /* OriginalPlayist.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = OriginalPlayist.plist; sourceTree = "<group>"; };
 		4F21086A1B82C46300BC3BAD /* VideoViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VideoViewController.swift; sourceTree = "<group>"; };
 		4F21086D1B82D2D600BC3BAD /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		4F3DDEF81B759196006F9245 /* Michelle Lee Collection.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Michelle Lee Collection.app"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -125,8 +127,6 @@
 		4FEDDD0F1B7D5A2700C6C663 /* audioPlayer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = audioPlayer.swift; sourceTree = "<group>"; };
 		4FF29E171C51C307000EFFFC /* sourceMethods.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = sourceMethods.swift; sourceTree = "<group>"; };
 		4FF29E191C51D3E5000EFFFC /* Variables.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Variables.swift; sourceTree = "<group>"; };
-		4FFDB8781C8281B8007E610F /* ModifiedPlayist.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = ModifiedPlayist.plist; sourceTree = "<group>"; };
-		4FFDB8791C8281B8007E610F /* OriginalPlayist.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = OriginalPlayist.plist; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -177,8 +177,8 @@
 		4F3DDEFA1B759196006F9245 /* Michelle Lee Collection */ = {
 			isa = PBXGroup;
 			children = (
-				4FFDB8781C8281B8007E610F /* ModifiedPlayist.plist */,
-				4FFDB8791C8281B8007E610F /* OriginalPlayist.plist */,
+				4F003D801C89339E00DCB032 /* ModifiedPlayist.plist */,
+				4F003D811C89339E00DCB032 /* OriginalPlayist.plist */,
 				4F47026B1C54405000E46240 /* Reachability.h */,
 				4F47026C1C54405000E46240 /* Reachability.m */,
 				4F3DDEFB1B759196006F9245 /* AppDelegate.swift */,
@@ -378,9 +378,9 @@
 				4FA2A0481BAB70C000019052 /* Background.jpg in Resources */,
 				4FA2A0581BAB70CE00019052 /* actualtvshowBackground.jpg in Resources */,
 				4FA2A0531BAB70C000019052 /* play.jpg in Resources */,
-				4FFDB87A1C8281B8007E610F /* ModifiedPlayist.plist in Resources */,
+				4F003D821C89339E00DCB032 /* ModifiedPlayist.plist in Resources */,
 				4FA2A1041BABA88A00019052 /* appIcon40*40 copy.png in Resources */,
-				4FFDB87B1C8281B8007E610F /* OriginalPlayist.plist in Resources */,
+				4F003D831C89339E00DCB032 /* OriginalPlayist.plist in Resources */,
 				4FA2A04B1BAB70C000019052 /* concertBackground.jpg in Resources */,
 				4FA2A0541BAB70C000019052 /* rotateOnOne.jpg in Resources */,
 				4FA2A0511BAB70C000019052 /* loadingImage.png in Resources */,

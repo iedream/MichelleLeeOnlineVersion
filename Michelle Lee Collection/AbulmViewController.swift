@@ -42,8 +42,10 @@ class AbulmViewController: UIViewController,UITableViewDelegate,UITableViewDataS
     @IBOutlet var txtFiled: UITextField!
     
     // Table Data
-    var tableTitleArray:NSMutableArray = NSMutableArray()
-    var currentDic:NSMutableDictionary = NSMutableDictionary()
+    //var tableTitleArray:NSMutableArray = NSMutableArray()
+    //var currentDic:NSMutableDictionary = NSMutableDictionary()
+    var subTitle:String = ""
+    var mainDic:NSDictionary!
     var objectToBePlayed:NSArray = NSArray()
     
     // Video Data
@@ -66,8 +68,8 @@ class AbulmViewController: UIViewController,UITableViewDelegate,UITableViewDataS
 
         NSNotificationCenter.defaultCenter().addObserver(self, selector: "refreshData", name: "connectionStateChange", object: nil)
         
-        
-        tableTitleArray = NSMutableArray.init(array: Variables.sharedInstance.allAmblum.allKeys)
+        mainDic = Variables.sharedInstance.allAmblum
+        //tableTitleArray = NSMutableArray.init(array: Variables.sharedInstance.allAmblum.allKeys)
         
         audioView.backgroundColor = UIColor.clearColor()
         audioView.layer.borderColor = UIColor.whiteColor().CGColor
@@ -128,20 +130,46 @@ class AbulmViewController: UIViewController,UITableViewDelegate,UITableViewDataS
     }
     
     func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return tableTitleArray.count
+        if(subTitle == ""){
+            return mainDic.count
+        }else{
+            return (mainDic[subTitle]?.count)!
+        }
     }
     
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         let cell = audioTableView.dequeueReusableCellWithIdentifier("CustomAudioCell", forIndexPath: indexPath) as! CustomAudioCell
         let row = indexPath.row
-        if(currentDic.count != 0 && (currentDic[tableTitleArray[row] as! String] as! NSArray)[0] as! String == "url"){
-            cell.setCellAlpha(true)
-        }else{
+        
+        if(subTitle != ""){
+            let keyArray:NSArray = (mainDic[subTitle]?.allKeys)!
+            if(keyArray.count != 0){
+                cell.textLabel?.text = keyArray[row] as? String
+            }
+            
+            let valueArray:NSArray = (mainDic[subTitle]?.allValues)!
+            if(valueArray.count != 0 && valueArray[row][0] == "url"){
+                 cell.setCellAlpha(true)
+            }else{
+                 cell.setCellAlpha(false)
+            }
+        }else {
+            let keyArray:NSArray = mainDic.allKeys
+            if(keyArray.count != 0){
+                cell.textLabel?.text = keyArray[row] as? String
+            }
             cell.setCellAlpha(false)
         }
-        if(tableTitleArray.count != 0){
-            cell.textLabel?.text = tableTitleArray.objectAtIndex(row) as? String
-        }
+        
+//        if(currentDic.count != 0 && (currentDic[tableTitleArray[row] as! String] as! NSArray)[0] as! String == "url"){
+//            cell.setCellAlpha(true)
+//        }else{
+//            cell.setCellAlpha(false)
+//        }
+//       
+//        if(tableTitleArray.count != 0){
+//            cell.textLabel?.text = tableTitleArray.objectAtIndex(row) as? String
+//        }
         
         return cell
     }
@@ -154,12 +182,39 @@ class AbulmViewController: UIViewController,UITableViewDelegate,UITableViewDataS
         pickerView.hidden = true
         
         let row = indexPath.row
-        let name:String = tableTitleArray.objectAtIndex(row) as! String
+        
+        let name:String!
+        if(subTitle != ""){
+            name = (mainDic[subTitle] as! NSDictionary).allKeys[row] as! String
+        }else{
+            name = mainDic.allKeys[row] as! String
+        }
+        
+        //let name:String = tableTitleArray.objectAtIndex(row) as! String
         noResult.hidden = true
         
         // if the count equals, then still at main menu, so clear table view and populate it with sub menu, and assign correct properties
         // if the cound doesn't equals, then in sub menu, so set up player and properties, and change audio view
-        if(tableTitleArray.isEqualToArray(Variables.sharedInstance.allAmblum.allKeys)){ // Set Property
+        if(subTitle == ""){
+            subTitle = name
+            audioTableView.reloadData()
+        }else{
+            objectToBePlayed = (mainDic[subTitle]?.objectForKey(name))! as! NSArray
+            
+            // Set Audio Player Property
+            audioPlayer.sharedInstance.setDatas(mainDic[subTitle] as! NSDictionary)
+            
+            // Set Up Audio Player, Audio Player Mode, Audio Player Property
+            audioPlayer.sharedInstance.setUpPlayer(name, objectToBePlay: objectToBePlayed, actSlider: slider, actCurrentLabel: currentTimeLabel, actEndLabel: endTimeLabel, videoButton: mvButton, actSpinner: progressBar,actblurEffect: blurView)
+            
+            // Set Active and Inactive Buttons
+            let activeButton:[UIButton] = [pauseButton,singleRotateButton]
+            let inactiveButton:[UIButton] = [playButton,multipleRotateButton]
+            self.buttonActiveandInactive(activeButton, inactiveButtons: inactiveButton)
+
+        }
+        
+        /*if(tableTitleArray.isEqualToArray(Variables.sharedInstance.allAmblum.allKeys)){ // Set Property
             currentDic.removeAllObjects()
             currentDic = NSMutableDictionary.init(dictionary:Variables.sharedInstance.allAmblum.objectForKey(name) as! NSDictionary )
             
@@ -182,9 +237,7 @@ class AbulmViewController: UIViewController,UITableViewDelegate,UITableViewDataS
             let inactiveButton:[UIButton] = [playButton,multipleRotateButton]
             
             self.buttonActiveandInactive(activeButton, inactiveButtons: inactiveButton)
-        }
-        
-        
+        }*/
         
     }
     
@@ -219,13 +272,15 @@ class AbulmViewController: UIViewController,UITableViewDelegate,UITableViewDataS
         
         let nameArr = name.characters.split{$0 == "/"}.map(String.init)
         
+        let subDict:NSDictionary = mainDic[nameArr[1]] as! NSDictionary
         
-        let subDict:NSDictionary = Variables.sharedInstance.allAmblum.objectForKey(nameArr[1]) as! NSDictionary
-        currentDic.removeAllObjects()
-        currentDic = NSMutableDictionary.init(dictionary:subDict)
+//        let subDict:NSDictionary = Variables.sharedInstance.allAmblum.objectForKey(nameArr[1]) as! NSDictionary
+//        currentDic.removeAllObjects()
+//        currentDic = NSMutableDictionary.init(dictionary:subDict)
         
         // Set Audio Player Property
-        audioPlayer.sharedInstance.setDatas(currentDic)
+        audioPlayer.sharedInstance.setDatas(subDict)
+        //audioPlayer.sharedInstance.setDatas(currentDic)
         
         // Set Up Audio Player, Audio Player Mode, Audio Player Property
         audioPlayer.sharedInstance.setUpPlayer(nameArr[0], objectToBePlay: subDict.objectForKey(nameArr[0]) as! NSArray, actSlider: slider, actCurrentLabel: currentTimeLabel, actEndLabel: endTimeLabel, videoButton: mvButton, actSpinner: progressBar,actblurEffect: blurView)
@@ -279,9 +334,10 @@ class AbulmViewController: UIViewController,UITableViewDelegate,UITableViewDataS
     @IBAction func backToHomeMenu(sender: AnyObject) {
         noResult.hidden = true
         pickerView.hidden = true
-        tableTitleArray.removeAllObjects()
-        currentDic.removeAllObjects()
-        tableTitleArray = NSMutableArray.init(array:Variables.sharedInstance.allAmblum.allKeys)
+        subTitle = ""
+        //tableTitleArray.removeAllObjects()
+        //currentDic.removeAllObjects()
+        //tableTitleArray = NSMutableArray.init(array:Variables.sharedInstance.allAmblum.allKeys)
         audioTableView.reloadData()
     }
     
@@ -425,7 +481,10 @@ class AbulmViewController: UIViewController,UITableViewDelegate,UITableViewDataS
         
         clearVideoButton.hidden = false
         
-        let name:String = currentDic.allKeysForObject(objectToBePlayed).first as! String
+        let dict:NSDictionary = mainDic.objectForKey(subTitle) as! NSDictionary
+        let name:String = dict.allKeysForObject(objectToBePlayed).first as! String
+        //mainDic[subTitle]?.allKeysForObject(objectToBePlayed).first as! String
+        //let name:String = currentDic.allKeysForObject(objectToBePlayed).first as! String
 
         self.addChildViewController(videoPlayer.sharedInstance)
         self.view.addSubview(videoPlayer.sharedInstance.view)
